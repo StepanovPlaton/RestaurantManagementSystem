@@ -1,0 +1,155 @@
+// ТЗ: База данных для системы ресторана
+
+// 1. Справочник ролей только для сотрудников (Админ, Менеджер, Курьер)
+Table roles {
+  id integer [primary key]
+  name varchar
+}
+
+// 2. Таблица аватарок
+Table avatars {
+  id integer [primary key]
+  path varchar
+}
+
+// 3. Таблица сотрудников
+Table employees {
+  id integer [primary key]
+  first_name varchar
+  last_name varchar
+  middle_name varchar [null, note: 'Отчество (необязательное поле)']
+  login varchar [unique, note: '4-16 символов']
+  password_hash varchar
+  role_id integer
+  phone varchar
+  avatar_id integer [null]
+  is_working boolean [default: false, note: 'Статус курьера: на смене или нет']
+}
+
+// 4. Таблица клиентов
+Table clients {
+  id integer [primary key]
+  first_name varchar
+  last_name varchar
+  middle_name varchar [null, note: 'Отчество (необязательное поле)']
+  login varchar [unique, note: '4-16 символов']
+  password_hash varchar
+  email varchar
+  phone varchar
+  avatar_id integer [null]
+}
+
+Table client_addresses {
+  id integer [primary key]
+  client_id integer
+  address_text text
+}
+
+// 5. Блюда и фотографии (Многие ко многим)
+Table dishes {
+  id integer [primary key]
+  name varchar
+  weight float
+  calories integer
+  price decimal(10,2)
+  description text
+}
+
+Table photos {
+  id integer [primary key]
+  path varchar
+}
+
+Table dish_photos {
+  dish_id integer
+  photo_id integer
+}
+
+// 6. Меню (группировка блюд)
+Table menus {
+  id integer [primary key]
+  name varchar
+  seasonality varchar
+  is_active boolean
+}
+
+Table menu_dishes {
+  menu_id integer
+  dish_id integer
+}
+
+// 7. Ингредиенты
+Table ingredients {
+  id integer [primary key]
+  name varchar
+}
+
+Table dish_ingredients {
+  dish_id integer
+  ingredient_id integer
+}
+
+// 8. Заказы
+Table order_statuses {
+  id integer [primary key]
+  status_name varchar
+}
+
+Table orders {
+  id integer [primary key]
+  client_id integer
+  address_id integer
+  manager_id integer [null] // Назначает менеджер
+  courier_id integer [null] // Доставляет курьер
+  created_at timestamp [default: `now()`]
+}
+
+// 9. История статусов (здесь мы видим, кто внес изменения)
+Table order_status_history {
+  id integer [primary key]
+  order_id integer
+  status_id integer
+  changed_at timestamp [default: `now()`]
+  
+  // Поля для связи: заполнится либо одно, либо другое
+  employee_id integer [null, note: 'Если изменил сотрудник']
+  client_id integer [null, note: 'Если изменил клиент (отмена/подтверждение)']
+  
+  comment text [note: 'Отзыв клиента или отчет курьера']
+}
+
+Table order_items {
+  id integer [primary key]
+  order_id integer
+  dish_id integer
+  quantity integer
+}
+
+// --- Отношения (Relationships) ---
+
+Ref: employees.role_id > roles.id
+Ref: employees.avatar_id > avatars.id
+Ref: clients.avatar_id > avatars.id
+Ref: client_addresses.client_id > clients.id
+
+Ref: dish_photos.dish_id > dishes.id
+Ref: dish_photos.photo_id > photos.id
+
+Ref: menu_dishes.menu_id > menus.id
+Ref: menu_dishes.dish_id > dishes.id
+
+Ref: dish_ingredients.dish_id > dishes.id
+Ref: dish_ingredients.ingredient_id > ingredients.id
+
+Ref: orders.client_id > clients.id
+Ref: orders.address_id > client_addresses.id
+Ref: orders.manager_id > employees.id
+Ref: orders.courier_id > employees.id
+
+Ref: order_status_history.order_id > orders.id
+Ref: order_status_history.status_id > order_statuses.id
+Ref: order_status_history.employee_id > employees.id
+Ref: order_status_history.client_id > clients.id
+
+Ref: order_items.order_id > orders.id
+Ref: order_items.dish_id > dishes.id
