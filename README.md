@@ -48,4 +48,4 @@ RestaurantManagementSystem/
 
 ## 📄 Лицензия
 
-Проект распространяется под лицензией [**BEER-WARE**](./LICENCE).
+Проект распространяется под лицензией [**WTFPL**](./LICENCE).
