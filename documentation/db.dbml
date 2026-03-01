@@ -1,136 +1,134 @@
-// ТЗ: База данных для системы ресторана
-
-// 1. Справочник ролей только для сотрудников (Админ, Менеджер, Курьер)
-Table roles {
-  id integer [primary key]
-  name varchar
+Table users {  // данные для аутентификации
+  id integer [primary key]  // уникальный ID пользователя
+  login varchar [unique, note: '4-16 символов']  // логин для входа
+  password_hash varchar  // хэш пароля
+  user_type varchar [note: 'CLIENT или EMPLOYEE']  // тип пользователя
 }
 
-// 2. Таблица аватарок
-Table avatars {
+Table roles {  // справочник ролей сотрудников
   id integer [primary key]
-  path varchar
+  name varchar  // название роли (MANAGER, COOK и т.д.)
 }
 
-// 3. Таблица сотрудников
-Table employees {
+Table avatars {  // аватары пользователей
   id integer [primary key]
+  path varchar  // путь к файлу изображения
+}
+
+Table employees {  // профиль сотрудника (1 к 1 с users)
+  user_id integer [primary key]  // ссылка на users.id
+
   first_name varchar
   last_name varchar
-  middle_name varchar [null, note: 'Отчество (необязательное поле)']
-  login varchar [unique, note: '4-16 символов']
-  password_hash varchar
-  role_id integer
+  middle_name varchar [null]
+
+  role_id integer  // роль сотрудника
   phone varchar
-  avatar_id integer [null]
-  is_working boolean [default: false, note: 'Статус курьера: на смене или нет']
+  avatar_id integer [null]  // аватар сотрудника
+  is_working boolean [default: false]  // работает ли сейчас
 }
 
-// 4. Таблица клиентов
-Table clients {
-  id integer [primary key]
+Table clients {  // профиль клиента (1 к 1 с users)
+  user_id integer [primary key]  // ссылка на users.id
+
   first_name varchar
   last_name varchar
-  middle_name varchar [null, note: 'Отчество (необязательное поле)']
-  login varchar [unique, note: '4-16 символов']
-  password_hash varchar
+  middle_name varchar [null]
+
   email varchar
   phone varchar
-  avatar_id integer [null]
+  avatar_id integer [null]  // аватар клиента
 }
 
-Table client_addresses {
+Table client_addresses {  // адреса клиента (1 ко многим)
   id integer [primary key]
-  client_id integer
-  address_text text
+  client_id integer  // ссылка на клиента
+  address_text text  // текст адреса доставки
 }
 
-// 5. Блюда и фотографии (Многие ко многим)
-Table dishes {
+Table dishes {  // блюда ресторана
   id integer [primary key]
   name varchar
-  weight float
+  weight float  // вес блюда
   calories integer
-  price decimal(10,2)
+  price decimal(10,2)  // текущая цена
   description text
 }
 
-Table photos {
+Table photos {  // фотографии блюд
   id integer [primary key]
-  path varchar
+  path varchar  // путь к фото
 }
 
-Table dish_photos {
+Table dish_photos {  // связь блюд и фото (многие ко многим)
   dish_id integer
   photo_id integer
 }
 
-// 6. Меню (группировка блюд)
-Table menus {
+Table menus {  // меню (сезонное, специальное)
   id integer [primary key]
   name varchar
-  seasonality varchar
-  is_active boolean
+  seasonality varchar  // сезонность меню
+  is_active boolean  // активно ли меню
 }
 
-Table menu_dishes {
+Table menu_dishes {  // блюда в меню (многие ко многим)
   menu_id integer
   dish_id integer
 }
 
-// 7. Ингредиенты
-Table ingredients {
+Table ingredients {  // ингредиенты
   id integer [primary key]
   name varchar
 }
 
-Table dish_ingredients {
+Table dish_ingredients {  // состав блюда (многие ко многим)
   dish_id integer
   ingredient_id integer
 }
 
-// 8. Заказы
-Table order_statuses {
+Table order_statuses {  // справочник статусов заказа
   id integer [primary key]
-  status_name varchar
+  status_name varchar  // NEW, COOKING, DELIVERING и т.д.
 }
 
-Table orders {
+Table orders {  // заказ клиента
   id integer [primary key]
-  client_id integer
-  address_id integer
-  manager_id integer [null] // Назначает менеджер
-  courier_id integer [null] // Доставляет курьер
-  created_at timestamp [default: `now()`]
+  client_id integer  // кто сделал заказ
+  address_id integer  // адрес доставки
+  manager_id integer [null]  // менеджер, принявший заказ
+  courier_id integer [null]  // назначенный курьер
+
+  total_price decimal(12,2) [default: 0]  // итоговая сумма заказа
 }
 
-// 9. История статусов (здесь мы видим, кто внес изменения)
-Table order_status_history {
+Table order_status_history {  // история изменения статусов
   id integer [primary key]
-  order_id integer
-  status_id integer
-  changed_at timestamp [default: `now()`]
-  
-  // Поля для связи: заполнится либо одно, либо другое
-  employee_id integer [null, note: 'Если изменил сотрудник']
-  client_id integer [null, note: 'Если изменил клиент (отмена/подтверждение)']
-  
-  comment text [note: 'Отзыв клиента или отчет курьера']
+  order_id integer  // заказ
+  status_id integer  // новый статус
+
+  employee_id integer [null]  // сотрудник, изменивший статус
+  client_id integer [null]  // клиент, изменивший статус
+
+  comment text  // комментарий к изменению
 }
 
-Table order_items {
+Table order_items {  // позиции заказа
   id integer [primary key]
-  order_id integer
-  dish_id integer
-  quantity integer
+  order_id integer  // заказ
+  dish_id integer  // блюдо
+  quantity integer  // количество
+  price_at_moment decimal(10,2)  // цена блюда на момент заказа
 }
 
-// --- Отношения (Relationships) ---
+Ref: employees.user_id > users.id
+Ref: clients.user_id > users.id
 
 Ref: employees.role_id > roles.id
 Ref: employees.avatar_id > avatars.id
 Ref: clients.avatar_id > avatars.id
-Ref: client_addresses.client_id > clients.id
+
+Ref: client_addresses.client_id > clients.user_id
 
 Ref: dish_photos.dish_id > dishes.id
 Ref: dish_photos.photo_id > photos.id
@@ -141,15 +139,21 @@ Ref: menu_dishes.dish_id > dishes.id
 Ref: dish_ingredients.dish_id > dishes.id
 Ref: dish_ingredients.ingredient_id > ingredients.id
 
-Ref: orders.client_id > clients.id
+Ref: orders.client_id > clients.user_id
 Ref: orders.address_id > client_addresses.id
-Ref: orders.manager_id > employees.id
-Ref: orders.courier_id > employees.id
+Ref: orders.manager_id > employees.user_id
+Ref: orders.courier_id > employees.user_id
 
 Ref: order_status_history.order_id > orders.id
 Ref: order_status_history.status_id > order_statuses.id
-Ref: order_status_history.employee_id > employees.id
-Ref: order_status_history.client_id > clients.id
+Ref: order_status_history.employee_id > employees.user_id
+Ref: order_status_history.client_id > clients.user_id
 
 Ref: order_items.order_id > orders.id
 Ref: order_items.dish_id > dishes.id
+
+Ref: "orders"."id" < "orders"."client_id"
+
+Ref: "orders"."id" < "orders"."address_id"
+
+Ref: "employees"."user_id" < "employees"."middle_name"
