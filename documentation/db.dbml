@@ -1,159 +1,129 @@
-Table users {  // данные для аутентификации
-  id integer [primary key]  // уникальный ID пользователя
-  login varchar [unique, note: '4-16 символов']  // логин для входа
-  password_hash varchar  // хэш пароля
-  user_type varchar [note: 'CLIENT или EMPLOYEE']  // тип пользователя
+// Схема БД Restaurant Management System
+// Синхронизировано с backend: Flyway migrations V1–V7 (ветка employee, commit 205d958)
+
+Table users {
+  id integer [primary key, increment, note: 'BIGSERIAL']
+  login varchar(16) [unique, not null, note: '4–16 символов']
+  password_hash varchar(255) [not null]
+  user_type varchar(20) [not null, note: 'CLIENT | EMPLOYEE']
 }
 
-Table roles {  // справочник ролей сотрудников
-  id integer [primary key]
-  name varchar  // название роли (MANAGER, COOK и т.д.)
+Table roles {
+  id integer [primary key, increment]
+  name varchar(50) [unique, not null, note: 'ADMIN | MANAGER | COURIER']
 }
 
-Table avatars {  // аватары пользователей
-  id integer [primary key]
-  path varchar  // путь к файлу изображения
+Table avatars {
+  id integer [primary key, increment]
+  path varchar(500) [not null]
 }
 
-Table employees {  // профиль сотрудника (1 к 1 с users)
-  user_id integer [primary key]  // ссылка на users.id
-
-  first_name varchar
-  last_name varchar
-  middle_name varchar [null]
-
-  role_id integer  // роль сотрудника
-  phone varchar
-  avatar_id integer [null]  // аватар сотрудника
-  is_working boolean [default: false]  // работает ли сейчас
+Table employees {
+  user_id integer [primary key, ref: > users.id]
+  first_name varchar(100) [not null]
+  last_name varchar(100) [not null]
+  middle_name varchar(100)
+  role_id integer [not null, ref: > roles.id]
+  phone varchar(20) [not null]
+  avatar_id integer [ref: > avatars.id]
+  is_working boolean [not null, default: false]
 }
 
-Table clients {  // профиль клиента (1 к 1 с users)
-  user_id integer [primary key]  // ссылка на users.id
-
-  first_name varchar
-  last_name varchar
-  middle_name varchar [null]
-
-  email varchar
-  phone varchar
-  avatar_id integer [null]  // аватар клиента
+Table clients {
+  user_id integer [primary key, ref: > users.id]
+  first_name varchar(100) [not null]
+  last_name varchar(100) [not null]
+  middle_name varchar(100)
+  email varchar(255) [unique, not null]
+  phone varchar(20) [not null]
+  avatar_id integer [ref: > avatars.id]
 }
 
-Table client_addresses {  // адреса клиента (1 ко многим)
-  id integer [primary key]
-  client_id integer  // ссылка на клиента
-  address_text text  // текст адреса доставки
+Table client_addresses {
+  id integer [primary key, increment]
+  client_id integer [not null, ref: > clients.user_id]
+  address_text text [not null]
 }
 
-Table dishes {  // блюда ресторана
-  id integer [primary key]
-  name varchar
-  weight float  // вес блюда
-  calories integer
-  price decimal(10,2)  // текущая цена
+Table dishes {
+  id integer [primary key, increment]
+  name varchar(255) [not null]
+  weight float [not null]
+  calories integer [not null]
+  price decimal(10,2) [not null]
   description text
 }
 
-Table photos {  // фотографии блюд
-  id integer [primary key]
-  path varchar  // путь к фото
+Table photos {
+  id integer [primary key, increment]
+  path varchar(500) [not null]
 }
 
-Table dish_photos {  // связь блюд и фото (многие ко многим)
-  dish_id integer
-  photo_id integer
+Table dish_photos {
+  dish_id integer [not null, ref: > dishes.id]
+  photo_id integer [not null, ref: > photos.id]
+  indexes {
+    (dish_id, photo_id) [pk]
+  }
 }
 
-Table menus {  // меню (сезонное, специальное)
-  id integer [primary key]
-  name varchar
-  seasonality varchar  // сезонность меню
-  is_active boolean  // активно ли меню
+Table menus {
+  id integer [primary key, increment]
+  name varchar(255) [not null]
+  seasonality varchar(50) [not null]
+  is_active boolean [not null, default: false]
 }
 
-Table menu_dishes {  // блюда в меню (многие ко многим)
-  menu_id integer
-  dish_id integer
+Table menu_dishes {
+  menu_id integer [not null, ref: > menus.id]
+  dish_id integer [not null, ref: > dishes.id]
+  indexes {
+    (menu_id, dish_id) [pk]
+  }
 }
 
-Table ingredients {  // ингредиенты
-  id integer [primary key]
-  name varchar
+Table ingredients {
+  id integer [primary key, increment]
+  name varchar(255) [unique, not null]
 }
 
-Table dish_ingredients {  // состав блюда (многие ко многим)
-  dish_id integer
-  ingredient_id integer
+Table dish_ingredients {
+  dish_id integer [not null, ref: > dishes.id]
+  ingredient_id integer [not null, ref: > ingredients.id]
+  indexes {
+    (dish_id, ingredient_id) [pk]
+  }
 }
 
-Table order_statuses {  // справочник статусов заказа
-  id integer [primary key]
-  status_name varchar  // NEW, COOKING, DELIVERING и т.д.
+Table order_statuses {
+  id integer [primary key, increment]
+  status_name varchar(50) [unique, not null, note: 'NEW | COOKING | DELIVERING | DELIVERED | CANCELLED']
 }
 
-Table orders {  // заказ клиента
-  id integer [primary key]
-  client_id integer  // кто сделал заказ
-  address_id integer  // адрес доставки
-  manager_id integer [null]  // менеджер, принявший заказ
-  courier_id integer [null]  // назначенный курьер
-
-  total_price decimal(12,2) [default: 0]  // итоговая сумма заказа
+Table orders {
+  id integer [primary key, increment]
+  client_id integer [not null, ref: > clients.user_id]
+  address_id integer [not null, ref: > client_addresses.id]
+  manager_id integer [ref: > employees.user_id]
+  courier_id integer [ref: > employees.user_id]
+  total_price decimal(12,2) [not null, default: 0]
+  created_at timestamptz [not null, default: `now()`]
 }
 
-Table order_status_history {  // история изменения статусов
-  id integer [primary key]
-  order_id integer  // заказ
-  status_id integer  // новый статус
-
-  employee_id integer [null]  // сотрудник, изменивший статус
-  client_id integer [null]  // клиент, изменивший статус
-
-  comment text  // комментарий к изменению
+Table order_status_history {
+  id integer [primary key, increment]
+  order_id integer [not null, ref: > orders.id]
+  status_id integer [not null, ref: > order_statuses.id]
+  employee_id integer [ref: > employees.user_id]
+  client_id integer [ref: > clients.user_id]
+  comment text
+  changed_at timestamptz [not null, default: `now()`]
 }
 
-Table order_items {  // позиции заказа
-  id integer [primary key]
-  order_id integer  // заказ
-  dish_id integer  // блюдо
-  quantity integer  // количество
-  price_at_moment decimal(10,2)  // цена блюда на момент заказа
+Table order_items {
+  id integer [primary key, increment]
+  order_id integer [not null, ref: > orders.id]
+  dish_id integer [not null, ref: > dishes.id]
+  quantity integer [not null, note: '> 0']
+  price_at_moment decimal(10,2) [not null]
 }
-
-Ref: employees.user_id > users.id
-Ref: clients.user_id > users.id
-
-Ref: employees.role_id > roles.id
-Ref: employees.avatar_id > avatars.id
-Ref: clients.avatar_id > avatars.id
-
-Ref: client_addresses.client_id > clients.user_id
-
-Ref: dish_photos.dish_id > dishes.id
-Ref: dish_photos.photo_id > photos.id
-
-Ref: menu_dishes.menu_id > menus.id
-Ref: menu_dishes.dish_id > dishes.id
-
-Ref: dish_ingredients.dish_id > dishes.id
-Ref: dish_ingredients.ingredient_id > ingredients.id
-
-Ref: orders.client_id > clients.user_id
-Ref: orders.address_id > client_addresses.id
-Ref: orders.manager_id > employees.user_id
-Ref: orders.courier_id > employees.user_id
-
-Ref: order_status_history.order_id > orders.id
-Ref: order_status_history.status_id > order_statuses.id
-Ref: order_status_history.employee_id > employees.user_id
-Ref: order_status_history.client_id > clients.user_id
-
-Ref: order_items.order_id > orders.id
-Ref: order_items.dish_id > dishes.id
-
-Ref: "orders"."id" < "orders"."client_id"
-
-Ref: "orders"."id" < "orders"."address_id"
-
-Ref: "employees"."user_id" < "employees"."middle_name"

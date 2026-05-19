@@ -1,51 +1,98 @@
-# 🍽️ Restaurant Management System
+# Restaurant Management System
 
-> **Restaurant Management System** — система управления заказами ресторана с поддержкой заказов, меню, блюд и управления сотрудниками.
+Система управления рестораном с доставкой заказов: меню и блюда, обработка заказов, роли сотрудников (администратор, менеджер, курьер) и клиентское мобильное приложение.
 
 ![ERD Diagram](./screenshots/ERD.png)
 
-## 🚀 О проекте
+## О проекте
 
-- **Система управления рестораном** для автоматизации процессов работы
-- **REST API** для работы с различными сущностями
-- **Раздельная авторизация** для сотрудников и клиентов через JWT токены
-- **Управление сотрудниками** с ролями: Админ, Менеджер, Курьер
-- **Управление клиентской базой**
-- **Управление меню и блюдами** с фотографиями, ингредиентами и описаниями
-- **Обработка заказов** с назначением курьеров и отслеживанием статусов
-- **История изменений статусов** заказов с указанием, кто внес изменения
-- **Группировка блюд в меню** с учетом сезонности
-- **Документация API** в формате OpenAPI 3.0.3 (Swagger)
+- REST API на Spring Boot (JWT, PostgreSQL, Flyway)
+- Раздельная авторизация сотрудников и клиентов
+- Управление меню, блюдами, ингредиентами, фотографиями
+- Заказы с историей статусов и назначением курьеров
+- **Backend** реализован; **frontend** — в разработке
 
-> 💡 Проект находится на стадии проектирования
----
+Подробная документация: **[documentation/README.md](./documentation/README.md)**
 
-## 👥 Роли пользователей
+## Роли
 
-- **Admin (Администратор)**: полный доступ ко всем операциям системы, управление ролями и сотрудниками
-- **Manager (Менеджер)**: управление меню, блюдами, заказами, назначение курьеров
-- **Courier (Курьер)**: просмотр назначенных заказов, изменение статуса доставки
-- **Client (Клиент)**: регистрация, просмотр меню, создание и отслеживание заказов
+| Роль | Описание |
+|------|----------|
+| **Admin** | Меню, блюда, ингредиенты, сотрудники |
+| **Manager** | Заказы, клиенты, назначение курьеров |
+| **Courier** | Свои заказы, статус доставки, смена |
+| **Client** | Меню, корзина, заказы, профиль и адреса |
 
----
-
-## 📁 Структура проекта
+## Структура репозитория
 
 ```
 RestaurantManagementSystem/
-├── documentation/          # Документация проекта
-│   ├── db.dbml            # Схема базы данных (DBML)
-│   ├── swagger.yaml       # API документация (OpenAPI 3.0.3)
-│   ├── Пояснительная записка.pdf
-│   └── Пояснительная записка.docx
-├── screenshots/            # Медиа
-│   └── ERD.png            # ERD диаграмма базы данных
-├── LICENCE                 # Лицензия проекта
-└── README.md              # Этот файл
+├── backend/                 # Submodule: Spring Boot API
+├── frontend/                # Submodule: веб-клиент (в разработке)
+├── documentation/           # Актуальная документация
+│   ├── api/                 # Описание endpoint-ов
+│   ├── data/                # Модель данных
+│   ├── roles/               # Роли и страницы UI
+│   ├── product/             # Описание продукта
+│   ├── swagger.yaml         # OpenAPI 3.0
+│   ├── db.dbml              # Схема БД
+│   └── пояснительная-записка/  # Архив проектирования (курсовой)
+├── deploy/nginx/            # nginx config for root docker-compose
+├── docker-compose.yml       # Full stack (frontend + backend + DB + nginx)
+├── screenshots/
+│   └── ERD.png
+└── README.md
 ```
 
----
+## Полный стек в Docker
 
-## 📄 Лицензия
+Из корня репозитория (нужны submodules `backend/` и `frontend/`):
+
+```bash
+git submodule update --init --recursive
+cp .env.example .env
+docker compose up -d --build
+```
+
+- Приложение: [http://localhost](http://localhost)
+- Swagger UI: [http://localhost/swagger-ui.html](http://localhost/swagger-ui.html)
+- OpenAPI JSON: [http://localhost/api-docs](http://localhost/api-docs)
+
+Опционально:
+
+```bash
+# pgAdmin → http://127.0.0.1:5050 (хост БД в UI: postgres, порт 5432)
+docker compose --profile devtools up -d
+
+# Публикация в интернет через CloudPub (токен в .env: CLOUDPUB_TOKEN)
+docker compose --profile tunnel up -d
+docker compose logs -f cloudpub
+```
+
+## Быстрый старт (backend)
+
+Только API и PostgreSQL (без frontend/nginx):
+
+```bash
+cd backend
+cp .env.example .env
+docker compose up -d
+# API: http://localhost:8080
+# Swagger UI: http://localhost:8080/swagger-ui.html
+```
+
+## Быстрый старт (frontend)
+
+```bash
+cd frontend
+npm install
+cp .env.example .env.local
+npm run dev
+# http://localhost:3000
+```
+
+Подробнее: [frontend/README.md](./frontend/README.md).
+
+## Лицензия
 
 Проект распространяется под лицензией [**WTFPL**](./LICENCE).

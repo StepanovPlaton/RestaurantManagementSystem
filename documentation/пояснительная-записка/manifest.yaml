@@ -1,0 +1,666 @@
+figures:
+- id: fig-01
+  number: 1
+  caption: Обслуживание официантами
+  full_caption: Рисунок 1 – Обслуживание официантами
+  file: assets/fig-01-obsluzhivanie-ofitsiantami.png
+  section: 04-predmetnaya-oblast
+  keywords:
+  - obsluzhivanie ofitsiantami
+  - обслуживание
+  - официантами
+  context_snippet: обслуживание в зале – предоставление посадочных мест, сервисное
+    обслуживание официантами (рисунок 1);
+  draft: false
+- id: fig-02
+  number: 2
+  caption: Сырное плато
+  full_caption: Рисунок 2 – Сырное плато
+  file: assets/fig-02-syrnoe-plato.jpg
+  section: 04-predmetnaya-oblast
+  keywords:
+  - syrnoe plato
+  - плато
+  - сырное
+  context_snippet: 'напитки – жидкие продукты, разделяемые на алкогольные и безалкогольные.
+    Для алкогольной продукции в системе требуется проверка возраста клиента. Примеры:
+    Кофе «Латте макиато», Лимонад «Домашний», Вино'
+  draft: false
+- id: fig-03
+  number: 3
+  caption: Лосось на гриле с овощами
+  full_caption: Рисунок 3 – Лосось на гриле с овощами
+  file: assets/fig-03-losos-na-grile-s-ovoschami.jpg
+  section: 04-predmetnaya-oblast
+  keywords:
+  - losos na grile s ovoschami
+  - гриле
+  - лосось
+  - овощами
+  context_snippet: ''
+  draft: false
+- id: fig-04
+  number: 4
+  caption: Главная страница веб-приложения «Iikoweb»
+  full_caption: Рисунок 4 – Главная страница веб-приложения «Iikoweb»
+  file: assets/fig-04-glavnaya-stranitsa-veb-prilozheniya-iikoweb.png
+  section: 04-predmetnaya-oblast
+  keywords:
+  - glavnaya stranitsa veb prilozheniya iikoweb
+  - iikoweb
+  - веб
+  - главная
+  - приложения
+  - страница
+  context_snippet: Веб-приложение для удаленного контроля работы ресторана «IikoWeb»
+  draft: false
+- id: fig-05
+  number: 5
+  caption: Экран сотрудника в веб-приложении «Iikoweb»
+  full_caption: Рисунок 5 – Экран сотрудника в веб-приложении «Iikoweb»
+  file: assets/fig-05-ekran-sotrudnika-v-veb-prilozhenii-iikoweb.png
+  section: 04-predmetnaya-oblast
+  keywords:
+  - ekran sotrudnika v veb prilozhenii iikoweb
+  - iikoweb
+  - веб
+  - приложении
+  - сотрудника
+  - экран
+  context_snippet: IikoWeb – это облачный веб-офис системы автоматизации iiko, который
+    позволяет управлять рестораном удалённо из любой точки мира через браузер. Решение
+    предоставляет доступ к аналитике, прогнозам прода
+  draft: false
+- id: fig-06
+  number: 6
+  caption: Экран приложения «Iikoweb»
+  full_caption: Рисунок 6 – Экран приложения «Iikoweb»
+  file: assets/fig-06-ekran-prilozheniya-iikoweb.png
+  section: 04-predmetnaya-oblast
+  keywords:
+  - ekran prilozheniya iikoweb
+  - iikoweb
+  - приложения
+  - экран
+  context_snippet: ''
+  draft: false
+- id: fig-07
+  number: 7
+  caption: Экранная форма веб-приложения «YUMA»
+  full_caption: Рисунок 7 – Экранная форма веб-приложения «YUMA»
+  file: assets/fig-07-ekrannaya-forma-veb-prilozheniya-yuma.png
+  section: 04-predmetnaya-oblast
+  keywords:
+  - ekrannaya forma veb prilozheniya yuma
+  - yuma
+  - веб
+  - приложения
+  - форма
+  - экранная
+  context_snippet: Экосистема автоматизации ресторанного бизнеса «YUMA»
+  draft: false
+- id: fig-08
+  number: 8
+  caption: Киоск самообслуживания и электронная очередь приложения «Yama»
+  full_caption: Рисунок 8 – Киоск самообслуживания и электронная очередь приложения
+    «Yama»
+  file: assets/fig-08-kiosk-samoobsluzhivaniya-i-elektronnaya-ochered-pr.png
+  section: 04-predmetnaya-oblast
+  keywords:
+  - kiosk samoobsluzhivaniya i elektronnaya ochered pr
+  - yama
+  - киоск
+  - очередь
+  - приложения
+  - самообслуживания
+  - электронная
+  context_snippet: YUMA представляет собой экосистему автоматизации ресторанного бизнеса
+    с акцентом на маркетинговые инструменты и управление меню [7]. Система позволяет
+    вести складской учет, управлять персоналом и созд
+  draft: false
+- id: fig-09
+  number: 9
+  caption: интерфейс для официантов в «Yama»
+  full_caption: Рисунок 9 – интерфейс для официантов в «Yama»
+  file: assets/fig-09-interfeys-dlya-ofitsiantov-v-yama.png
+  section: 04-predmetnaya-oblast
+  keywords:
+  - interfeys dlya ofitsiantov v yama
+  - yama
+  - для
+  - интерфейс
+  - официантов
+  context_snippet: ''
+  draft: false
+- id: fig-10
+  number: 10
+  caption: Экранная форма веб-приложения «Restik»
+  full_caption: Рисунок 10 – Экранная форма веб-приложения «Restik»
+  file: assets/fig-10-ekrannaya-forma-veb-prilozheniya-restik.png
+  section: 04-predmetnaya-oblast
+  keywords:
+  - ekrannaya forma veb prilozheniya restik
+  - restik
+  - веб
+  - приложения
+  - форма
+  - экранная
+  context_snippet: Облачная платформа для автоматизации ресторанного бизнеса «Restik»
+  draft: false
+- id: fig-11
+  number: 11
+  caption: Функционал для официанта в приложении «Restik»
+  full_caption: Рисунок 11 – Функционал для официанта в приложении «Restik»
+  file: assets/fig-11-funktsional-dlya-ofitsianta-v-prilozhenii-restik.jpg
+  section: 04-predmetnaya-oblast
+  keywords:
+  - funktsional dlya ofitsianta v prilozhenii restik
+  - restik
+  - для
+  - официанта
+  - приложении
+  - функционал
+  context_snippet: Restik – это облачная платформа для автоматизации ресторанного
+    бизнеса, объединяющая POS-терминал, конструктор сайта доставки, QR-меню и CRM-инструменты
+    в едином интерфейсе. Система ориентирована на б
+  draft: false
+- id: fig-12
+  number: 12
+  caption: Интерфейс приложения «Restik»
+  full_caption: Рисунок 12 – Интерфейс приложения «Restik»
+  file: assets/fig-12-interfeys-prilozheniya-restik.png
+  section: 04-predmetnaya-oblast
+  keywords:
+  - interfeys prilozheniya restik
+  - restik
+  - интерфейс
+  - приложения
+  context_snippet: ''
+  draft: false
+- id: fig-13
+  number: 13
+  caption: Диаграмма объектов предметной области
+  full_caption: Рисунок 13 – Диаграмма объектов предметной области
+  file: assets/fig-13-diagramma-obektov-predmetnoy-oblasti.png
+  section: 04-predmetnaya-oblast
+  keywords:
+  - diagramma obektov predmetnoy oblasti
+  - диаграмма
+  - области
+  - объектов
+  - предметной
+  context_snippet: База данных – внешнее хранилище данных, обеспечивающее целостность
+    и сохранность информации о всех объектах системы.
+  draft: false
+- id: fig-14
+  number: 14
+  caption: Двухзвенная архитектура
+  full_caption: Рисунок 14 – Двухзвенная архитектура
+  file: assets/fig-14-dvuhzvennaya-arhitektura.png
+  section: 05-proektirovanie
+  keywords:
+  - dvuhzvennaya arhitektura
+  - архитектура
+  - двухзвенная
+  context_snippet: В данной модели клиент взаимодействует с сервером приложений, который
+    обрабатывает запросы и обращается к базе данных. Такой подход повышает масштабируемость
+    системы и облегчает её сопровождение.
+  draft: false
+- id: fig-15
+  number: 15
+  caption: Структурная схема системы
+  full_caption: Рисунок 15 – Структурная схема системы
+  file: assets/fig-15-strukturnaya-shema-sistemy.png
+  section: 05-proektirovanie
+  keywords:
+  - strukturnaya shema sistemy
+  - системы
+  - структурная
+  - схема
+  context_snippet: подсистема управления доставкой, которая обеспечивает назначение
+    заказов курьерам и контроль процесса доставки;
+  draft: false
+- id: fig-16
+  number: 16
+  caption: Прототип страницы входа в систему
+  full_caption: Рисунок 16 – Прототип страницы входа в систему
+  file: assets/fig-16-prototip-stranitsy-vhoda-v-sistemu.jpg
+  section: 05-proektirovanie
+  keywords:
+  - prototip stranitsy vhoda v sistemu
+  - входа
+  - прототип
+  - систему
+  - страницы
+  context_snippet: Интерфейс сотрудника ресторана будет представлять собой веб-приложение
+    с боковой панелью навигации и областью основного содержимого. Доступ к приложению
+    будет осуществляться через страницу авторизации
+  draft: false
+- id: fig-17
+  number: 17
+  caption: Прототип формы входа с ошибкой авторизации
+  full_caption: Рисунок 17 – Прототип формы входа с ошибкой авторизации
+  file: assets/fig-17-prototip-formy-vhoda-s-oshibkoy-avtorizatsii.jpg
+  section: 05-proektirovanie
+  keywords:
+  - prototip formy vhoda s oshibkoy avtorizatsii
+  - авторизации
+  - входа
+  - ошибкой
+  - прототип
+  - формы
+  context_snippet: На рисунке 17 приведён прототип формы входа с ошибкой авторизации.
+  draft: false
+- id: fig-18
+  number: 18
+  caption: Прототип страницы управления меню
+  full_caption: Рисунок 18 – Прототип страницы управления меню
+  file: assets/fig-18-prototip-stranitsy-upravleniya-menyu.jpg
+  section: 05-proektirovanie
+  keywords:
+  - prototip stranitsy upravleniya menyu
+  - меню
+  - прототип
+  - страницы
+  - управления
+  context_snippet: При вводе неверных учётных данных под формой входа будет отображаться
+    сообщение об ошибке «Неверный логин или пароль!», выделенное красным цветом. Такая
+    обратная связь обеспечит понятную индикацию оши
+  draft: false
+- id: fig-19
+  number: 19
+  caption: Прототип страницы управления блюдами
+  full_caption: Рисунок 19 – Прототип страницы управления блюдами
+  file: assets/fig-19-prototip-stranitsy-upravleniya-blyudami.jpg
+  section: 05-proektirovanie
+  keywords:
+  - prototip stranitsy upravleniya blyudami
+  - блюдами
+  - прототип
+  - страницы
+  - управления
+  context_snippet: Модальное окно «Редактирование меню» будет вызываться при выборе
+    конкретной записи из таблицы и позволит администратору изменить название меню,
+    добавить блюда из списка и сохранить изменения. Модальны
+  draft: false
+- id: fig-20
+  number: 20
+  caption: Прототип страницы управления курьерами
+  full_caption: Рисунок 20 – Прототип страницы управления курьерами
+  file: assets/fig-20-prototip-stranitsy-upravleniya-kurerami.jpg
+  section: 05-proektirovanie
+  keywords:
+  - prototip stranitsy upravleniya kurerami
+  - курьерами
+  - прототип
+  - страницы
+  - управления
+  context_snippet: На рисунке 20 приведён прототип страницы «Курьеры». Слева будет
+    располагаться навигационное меню с группами «Ресторан» и «Сотрудники». Справа
+    будет отображаться таблица курьеров с колонками «Фамилия»,
+  draft: false
+- id: fig-21
+  number: 21
+  caption: Прототип страницы управления менеджерами
+  full_caption: Рисунок 21 – Прототип страницы управления менеджерами
+  file: assets/fig-21-prototip-stranitsy-upravleniya-menedzherami.jpg
+  section: 05-proektirovanie
+  keywords:
+  - prototip stranitsy upravleniya menedzherami
+  - менеджерами
+  - прототип
+  - страницы
+  - управления
+  context_snippet: На рисунке 21 приведён прототип страницы «Менеджеры». Страница
+    будет иметь аналогичную структуру со страницей управления курьерами. Таблица менеджеров
+    будет содержать колонки «Фамилия» и «Телефон». Мо
+  draft: false
+- id: fig-22
+  number: 22
+  caption: Прототип страницы управления заказами (менеджер)
+  full_caption: Рисунок 22 – Прототип страницы управления заказами (менеджер)
+  file: assets/fig-22-prototip-stranitsy-upravleniya-zakazami-menedzher.jpg
+  section: 05-proektirovanie
+  keywords:
+  - prototip stranitsy upravleniya zakazami menedzher
+  - заказами
+  - менеджер
+  - прототип
+  - страницы
+  - управления
+  context_snippet: 'На рисунке 22 приведён прототип страницы «Заказы» интерфейса менеджера
+    с открытым модальным окном редактирования. Страница будет состоять из боковой
+    навигационной панели и основной рабочей области. В '
+  draft: false
+- id: fig-23
+  number: 23
+  caption: Прототип страницы списка заказов курьера
+  full_caption: Рисунок 23 – Прототип страницы списка заказов курьера
+  file: assets/fig-23-prototip-stranitsy-spiska-zakazov-kurera.jpg
+  section: 05-proektirovanie
+  keywords:
+  - prototip stranitsy spiska zakazov kurera
+  - заказов
+  - курьера
+  - прототип
+  - списка
+  - страницы
+  context_snippet: Мобильное веб-приложение для курьера будет оптимизировано под экраны
+    смартфона. В отличие от остальных сотрудников ресторана, курьер будет работать
+    не с десктопной, а с мобильной версией приложения, п
+  draft: false
+- id: fig-24
+  number: 24
+  caption: Прототип страницы карточки заказа курьера
+  full_caption: Рисунок 24 – Прототип страницы карточки заказа курьера
+  file: assets/fig-24-prototip-stranitsy-kartochki-zakaza-kurera.jpg
+  section: 05-proektirovanie
+  keywords:
+  - prototip stranitsy kartochki zakaza kurera
+  - заказа
+  - карточки
+  - курьера
+  - прототип
+  - страницы
+  context_snippet: 'На рисунке 24 приведён прототип страницы детального просмотра
+    заказа. Страница будет отображать адрес доставки, имя клиента и текущий статус
+    заказа в виде цветной метки. Ниже будет представлен состав '
+  draft: false
+- id: fig-25
+  number: 25
+  caption: Прототип экрана подтверждения смены статуса заказа
+  full_caption: Рисунок 25 – Прототип экрана подтверждения смены статуса заказа
+  file: assets/fig-25-prototip-ekrana-podtverzhdeniya-smeny-statusa-zaka.jpg
+  section: 05-proektirovanie
+  keywords:
+  - prototip ekrana podtverzhdeniya smeny statusa zaka
+  - заказа
+  - подтверждения
+  - прототип
+  - смены
+  - статуса
+  - экрана
+  context_snippet: На рисунке 25 приведён прототип экрана подтверждения смены статуса
+    заказа. Данный экран будет появляться после нажатия кнопки изменения статуса на
+    странице карточки заказа. Экран будет содержать визуа
+  draft: false
+- id: fig-26
+  number: 26
+  caption: Прототип страницы профиля курьера
+  full_caption: Рисунок 26 – Прототип страницы профиля курьера
+  file: assets/fig-26-prototip-stranitsy-profilya-kurera.jpg
+  section: 05-proektirovanie
+  keywords:
+  - prototip stranitsy profilya kurera
+  - курьера
+  - прототип
+  - профиля
+  - страницы
+  context_snippet: На рисунке 26 приведён прототип страницы «Профиль». В верхней части
+    страницы будут отображаться аватар с инициалами курьера, его полное имя и контактный
+    телефон. Ниже будет располагаться переключатель
+  draft: false
+- id: fig-27
+  number: 27
+  caption: Прототип страницы просмотра меню
+  full_caption: Рисунок 27 – Прототип страницы просмотра меню
+  file: assets/fig-27-prototip-stranitsy-prosmotra-menyu.jpg
+  section: 05-proektirovanie
+  keywords:
+  - prototip stranitsy prosmotra menyu
+  - меню
+  - просмотра
+  - прототип
+  - страницы
+  context_snippet: 'Мобильное веб-приложение для клиента будет оптимизировано под
+    экраны смартфона и будет включать четыре основных раздела: «Меню», «Корзина»,
+    «Заказы» и «Профиль», доступные через нижнюю навигационную п'
+  draft: false
+- id: fig-28
+  number: 28
+  caption: Прототип страницы карточки блюда
+  full_caption: Рисунок 28 – Прототип страницы карточки блюда
+  file: assets/fig-28-prototip-stranitsy-kartochki-blyuda.jpg
+  section: 05-proektirovanie
+  keywords:
+  - prototip stranitsy kartochki blyuda
+  - блюда
+  - карточки
+  - прототип
+  - страницы
+  context_snippet: На рисунке 28 приведён прототип страницы карточки блюда. На странице
+    будут отображаться фотография блюда, его название и описание, характеристики (вес,
+    калории, стоимость, количество ингредиентов), со
+  draft: false
+- id: fig-29
+  number: 29
+  caption: Прототип страницы истории заказов
+  full_caption: Рисунок 29 – Прототип страницы истории заказов
+  file: assets/fig-29-prototip-stranitsy-istorii-zakazov.jpg
+  section: 05-proektirovanie
+  keywords:
+  - prototip stranitsy istorii zakazov
+  - заказов
+  - истории
+  - прототип
+  - страницы
+  context_snippet: 'На рисунке 29 приведён прототип страницы истории заказов. Каждый
+    заказ будет отображаться в отдельной карточке с номером, датой и временем, цветной
+    меткой статуса («В пути» — оранжевый, «Доставлен» — '
+  draft: false
+- id: fig-30
+  number: 30
+  caption: Прототип страницы отслеживания заказа
+  full_caption: Рисунок 30 – Прототип страницы отслеживания заказа
+  file: assets/fig-30-prototip-stranitsy-otslezhivaniya-zakaza.jpg
+  section: 05-proektirovanie
+  keywords:
+  - prototip stranitsy otslezhivaniya zakaza
+  - заказа
+  - отслеживания
+  - прототип
+  - страницы
+  context_snippet: 'На рисунке 30 приведён прототип страницы отслеживания текущего
+    заказа. Страница будет отображать пошаговую шкалу статусов: «Заказ принят», «Готовится»,
+    «Передан курьеру», «Курьер в пути» и «Доставлен»'
+  draft: false
+- id: fig-31
+  number: 31
+  caption: Прототип страницы профиля пользователя
+  full_caption: Рисунок 31 – Прототип страницы профиля пользователя
+  file: assets/fig-31-prototip-stranitsy-profilya-polzovatelya.jpg
+  section: 05-proektirovanie
+  keywords:
+  - prototip stranitsy profilya polzovatelya
+  - пользователя
+  - прототип
+  - профиля
+  - страницы
+  context_snippet: 'На рисунке 31 приведён прототип страницы «Профиль». Страница будет
+    отображать аватар и полное имя пользователя, адрес электронной почты, а также
+    разделы: «Аккаунт» с пунктами «Личные данные» и «Адреса'
+  draft: false
+- id: fig-32
+  number: 32
+  caption: Навигационная модель интерфейса администратора
+  full_caption: Рисунок 32 – Навигационная модель интерфейса администратора
+  file: assets/fig-32-navigatsionnaya-model-interfeysa-administratora.jpg
+  section: 05-proektirovanie
+  keywords:
+  - navigatsionnaya model interfeysa administratora
+  - администратора
+  - интерфейса
+  - модель
+  - навигационная
+  context_snippet: Для каждой роли разработана отдельная навигационная модель. Сплошными
+    стрелками обозначены прямые переходы вперёд по пользовательскому пути.
+  draft: false
+- id: fig-33
+  number: 33
+  caption: Навигационная модель интерфейса курьера
+  full_caption: Рисунок 33 – Навигационная модель интерфейса курьера
+  file: assets/fig-33-navigatsionnaya-model-interfeysa-kurera.jpg
+  section: 05-proektirovanie
+  keywords:
+  - navigatsionnaya model interfeysa kurera
+  - интерфейса
+  - курьера
+  - модель
+  - навигационная
+  context_snippet: 'На рисунке 33 приведена навигационная модель интерфейса курьера.
+    Приложение курьера будет содержать две основные страницы, доступные через нижнюю
+    навигационную панель: «Мои заказы» и «Профиль». Из спи'
+  draft: false
+- id: fig-34
+  number: 34
+  caption: Навигационная модель интерфейса клиента
+  full_caption: Рисунок 34 – Навигационная модель интерфейса клиента
+  file: assets/fig-34-navigatsionnaya-model-interfeysa-klienta.jpg
+  section: 05-proektirovanie
+  keywords:
+  - navigatsionnaya model interfeysa klienta
+  - интерфейса
+  - клиента
+  - модель
+  - навигационная
+  context_snippet: 'На рисунке 34 приведена навигационная модель интерфейса клиента.
+    Мобильное приложение клиента будет включать четыре раздела нижней навигационной
+    панели: «Меню», «Корзина», «Заказы» и «Профиль». Из стр'
+  draft: false
+- id: fig-35
+  number: 35
+  caption: Диаграмма вариантов использования пользователя
+  full_caption: Рисунок 35 – Диаграмма вариантов использования пользователя
+  file: assets/fig-35-diagramma-variantov-ispolzovaniya-polzovatelya.png
+  section: 05-proektirovanie
+  keywords:
+  - diagramma variantov ispolzovaniya polzovatelya
+  - вариантов
+  - диаграмма
+  - использования
+  - пользователя
+  context_snippet: Диаграмма вариантов использования представляет собой наиболее общую
+    концептуальную модель сложной системы, которая является исходной для построения
+    всех остальных диаграмм. На ней изображаются отношен
+  draft: false
+- id: fig-36
+  number: 36
+  caption: Диаграмма вариантов использования клиента
+  full_caption: Рисунок 36 – Диаграмма вариантов использования клиента
+  file: assets/fig-36-diagramma-variantov-ispolzovaniya-klienta.png
+  section: 05-proektirovanie
+  keywords:
+  - diagramma variantov ispolzovaniya klienta
+  - вариантов
+  - диаграмма
+  - использования
+  - клиента
+  context_snippet: 'Для разрабатываемого приложения есть несколько ролей актера, поэтому
+    мы ввели абстрактного актера – «Пользователь». У пользователя есть выбор действий,
+    которые он может совершить: войти в систему, вве'
+  draft: false
+- id: fig-37
+  number: 37
+  caption: Диаграмма вариантов использования администратора
+  full_caption: Рисунок 37 – Диаграмма вариантов использования администратора
+  file: assets/fig-37-diagramma-variantov-ispolzovaniya-administratora.png
+  section: 05-proektirovanie
+  keywords:
+  - diagramma variantov ispolzovaniya administratora
+  - администратора
+  - вариантов
+  - диаграмма
+  - использования
+  context_snippet: 'Актер Администратор управляет основными сущностями системы и может:
+    работать с меню, создавая новые, удаляя или редактируя существующие, а также добавлять
+    и удалять блюда; управлять характеристиками б'
+  draft: false
+- id: fig-38
+  number: 38
+  caption: Диаграмма вариантов использования курьера
+  full_caption: Рисунок 38 – Диаграмма вариантов использования курьера
+  file: assets/fig-38-diagramma-variantov-ispolzovaniya-kurera.png
+  section: 05-proektirovanie
+  keywords:
+  - diagramma variantov ispolzovaniya kurera
+  - вариантов
+  - диаграмма
+  - использования
+  - курьера
+  context_snippet: 'У Курьера есть возможность выполнять следующие действия: выйти
+    из профиля, изменить свой статус работы, просматривать список своих заказов и
+    изменять их статус (предварительно выбрав заказ и подтверди'
+  draft: false
+- id: fig-39
+  number: 39
+  caption: Диаграмма вариантов использования менеджера
+  full_caption: Рисунок 39 – Диаграмма вариантов использования менеджера
+  file: assets/fig-39-diagramma-variantov-ispolzovaniya-menedzhera.png
+  section: 05-proektirovanie
+  keywords:
+  - diagramma variantov ispolzovaniya menedzhera
+  - вариантов
+  - диаграмма
+  - использования
+  - менеджера
+  context_snippet: 'Актер Менеджер отвечает за обработку заказов и может: назначать
+    заказы курьерам (предварительно выбрав нужный заказ) или редактировать их. При
+    редактировании заказа менеджер может добавить новое блюдо'
+  draft: false
+- id: fig-40
+  number: 1
+  caption: Логическая модель данных
+  full_caption: Рисунок 1 – Логическая модель данных
+  file: assets/fig-40-logicheskaya-model-dannyh.png
+  section: 05-proektirovanie
+  keywords:
+  - logicheskaya model dannyh
+  - данных
+  - логическая
+  - модель
+  context_snippet: Атрибут или набор атрибутов, используемый для идентификации экземпляра
+    сущности, называется ключом сущности. В случае если для идентификации экземпляра
+    используется один атрибут, ключ называется прост
+  draft: false
+- id: fig-41
+  number: null
+  caption: Схема алгоритма обработки элементов массива
+  full_caption: Рисунок ХХХ – Схема алгоритма обработки элементов массива
+  file: assets/fig-41-shema-algoritma-obrabotki-elementov-massiva.png
+  section: 05-proektirovanie
+  keywords:
+  - shema algoritma obrabotki elementov massiva
+  - алгоритма
+  - массива
+  - обработки
+  - схема
+  - элементов
+  context_snippet: Вводные слова про необходимость разработки алгоритмов.
+  draft: true
+- id: fig-42
+  number: null
+  caption: Сведения о разработчиках
+  full_caption: Рисунок ХХХ – Сведения о разработчиках
+  file: assets/fig-42-svedeniya-o-razrabotchikah.png
+  section: 06-realizaciya
+  keywords:
+  - svedeniya o razrabotchikah
+  - разработчиках
+  - сведения
+  context_snippet: На рисунках приведены примеры того, как нужно оформить сведения
+    о разработчиках.
+  draft: true
+- id: fig-43
+  number: null
+  caption: Сведения о разработчиках
+  full_caption: Рисунок ХХХ – Сведения о разработчиках
+  file: assets/fig-43-svedeniya-o-razrabotchikah.png
+  section: 06-realizaciya
+  keywords:
+  - svedeniya o razrabotchikah
+  - разработчиках
+  - сведения
+  context_snippet: На рисунках приведены примеры того, как нужно оформить сведения
+    о разработчиках.
+  draft: true
+generated_at: '2026-05-19T14:25:12.614244+00:00'

@@ -3,9 +3,9 @@ info:
   title: Restaurant Management System API
   description: |
     API для системы управления рестораном с поддержкой заказов, меню, блюд и управления сотрудниками.
-    
+
     Система поддерживает раздельную авторизацию для сотрудников и клиентов через JWT токены.
-    
+
     Роли пользователей:
     - **Admin**: Полный доступ ко всем операциям
     - **Manager**: Управление меню, блюдами, заказами, назначение курьеров
@@ -31,6 +31,10 @@ tags:
     description: Управление адресами клиентов
   - name: Dishes
     description: Управление блюдами
+  - name: Photos
+    description: Загрузка и удаление файлов-фотографий
+  - name: Avatars
+    description: Загрузка и удаление аватаров сотрудников и клиентов
   - name: Menus
     description: Управление меню
   - name: Ingredients
@@ -56,12 +60,9 @@ components:
       description: JWT токен для клиентов
 
   schemas:
-    # Authentication schemas
     EmployeeLoginRequest:
       type: object
-      required:
-        - login
-        - password
+      required: [login, password]
       properties:
         login:
           type: string
@@ -72,12 +73,10 @@ components:
           type: string
           format: password
           example: "password123"
-    
+
     ClientLoginRequest:
       type: object
-      required:
-        - login
-        - password
+      required: [login, password]
       properties:
         login:
           type: string
@@ -88,16 +87,10 @@ components:
           type: string
           format: password
           example: "password123"
-    
+
     ClientRegisterRequest:
       type: object
-      required:
-        - first_name
-        - last_name
-        - login
-        - password
-        - email
-        - phone
+      required: [first_name, last_name, login, password, email, phone]
       properties:
         first_name:
           type: string
@@ -125,16 +118,15 @@ components:
         phone:
           type: string
           example: "+79001234567"
-    
+
     RefreshTokenRequest:
       type: object
-      required:
-        - refresh_token
+      required: [refresh_token]
       properties:
         refresh_token:
           type: string
           example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-    
+
     TokenResponse:
       type: object
       properties:
@@ -151,36 +143,46 @@ components:
           type: integer
           description: Время жизни access токена в секундах
           example: 3600
-    
-    # Error schemas
+
     ErrorResponse:
       type: object
-      required:
-        - error
-        - exception
       properties:
         error:
           type: string
-          description: Заголовок ошибки (тип ошибки)
-          example: "Internal Server Error"
         exception:
           type: string
-          description: Описание ошибки (детальное сообщение об ошибке)
-          example: "An unexpected error occurred while processing the request"
         message:
           type: string
-          description: Краткое сообщение об ошибке (опционально)
-          example: "Invalid credentials"
         details:
           type: object
-          description: Дополнительные детали об ошибке (опционально)
           additionalProperties: true
         timestamp:
           type: string
           format: date-time
-          description: Время возникновения ошибки (опционально)
-          example: "2024-01-15T10:30:00Z"
-    
+      example:
+        error: "Not Found"
+        exception: "Resource not found"
+        message: "Dish not found: id=999"
+        timestamp: "2024-01-15T10:30:00Z"
+
+    ErrorResponse401:
+      type: object
+      properties:
+        error:
+          type: string
+        exception:
+          type: string
+        message:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+      example:
+        error: "Unauthorized"
+        exception: "Unauthorized"
+        message: "Неверный логин или пароль"
+        timestamp: "2024-01-15T10:30:00Z"
+
     ValidationError:
       type: object
       properties:
@@ -197,12 +199,12 @@ components:
             items:
               type: string
           example:
-            login: ["Login must be between 4 and 16 characters"]
-            password: ["Password is required"]
-    
-    # Entity schemas
+            login: ["Длина логина должна быть от 4 до 16 символов"]
+            password: ["Пароль обязателен"]
+
     Role:
       type: object
+      required: [id, name]
       properties:
         id:
           type: integer
@@ -210,12 +212,10 @@ components:
         name:
           type: string
           example: "Admin"
-      required:
-        - id
-        - name
-    
+
     Employee:
       type: object
+      required: [id, first_name, last_name, login, role_id]
       properties:
         id:
           type: integer
@@ -248,22 +248,10 @@ components:
         is_working:
           type: boolean
           example: true
-      required:
-        - id
-        - first_name
-        - last_name
-        - login
-        - role_id
-    
+
     EmployeeCreate:
       type: object
-      required:
-        - first_name
-        - last_name
-        - login
-        - password
-        - role_id
-        - phone
+      required: [first_name, last_name, login, password, role_id, phone]
       properties:
         first_name:
           type: string
@@ -297,7 +285,7 @@ components:
           type: boolean
           default: false
           example: false
-    
+
     EmployeeUpdate:
       type: object
       properties:
@@ -333,9 +321,47 @@ components:
         is_working:
           type: boolean
           example: true
-    
+
+    EmployeePut:
+      type: object
+      required: [first_name, last_name, login, role_id, phone]
+      properties:
+        first_name:
+          type: string
+          example: "Петр"
+        last_name:
+          type: string
+          example: "Петров"
+        middle_name:
+          type: string
+          nullable: true
+          example: "Иванович"
+        login:
+          type: string
+          minLength: 4
+          maxLength: 16
+          example: "manager1"
+        password:
+          type: string
+          format: password
+          example: "newpassword123"
+        role_id:
+          type: integer
+          example: 2
+        phone:
+          type: string
+          example: "+79001234567"
+        avatar_id:
+          type: integer
+          nullable: true
+          example: 1
+        is_working:
+          type: boolean
+          example: true
+
     Client:
       type: object
+      required: [id, first_name, last_name, login, email, phone]
       properties:
         id:
           type: integer
@@ -364,23 +390,10 @@ components:
           type: integer
           nullable: true
           example: 1
-      required:
-        - id
-        - first_name
-        - last_name
-        - login
-        - email
-        - phone
-    
+
     ClientCreate:
       type: object
-      required:
-        - first_name
-        - last_name
-        - login
-        - password
-        - email
-        - phone
+      required: [first_name, last_name, login, password, email, phone]
       properties:
         first_name:
           type: string
@@ -411,7 +424,7 @@ components:
           type: integer
           nullable: true
           example: 1
-    
+
     ClientUpdate:
       type: object
       properties:
@@ -445,9 +458,45 @@ components:
           type: integer
           nullable: true
           example: 1
-    
+
+    ClientPut:
+      type: object
+      required: [first_name, last_name, login, email, phone]
+      properties:
+        first_name:
+          type: string
+          example: "Иван"
+        last_name:
+          type: string
+          example: "Иванов"
+        middle_name:
+          type: string
+          nullable: true
+          example: "Петрович"
+        login:
+          type: string
+          minLength: 4
+          maxLength: 16
+          example: "client1"
+        password:
+          type: string
+          format: password
+          example: "newpassword123"
+        email:
+          type: string
+          format: email
+          example: "ivan@example.com"
+        phone:
+          type: string
+          example: "+79001234567"
+        avatar_id:
+          type: integer
+          nullable: true
+          example: 1
+
     ClientAddress:
       type: object
+      required: [id, client_id, address_text]
       properties:
         id:
           type: integer
@@ -458,29 +507,25 @@ components:
         address_text:
           type: string
           example: "г. Москва, ул. Ленина, д. 10, кв. 5"
-      required:
-        - id
-        - client_id
-        - address_text
-    
+
     ClientAddressCreate:
       type: object
-      required:
-        - address_text
+      required: [address_text]
       properties:
         address_text:
           type: string
           example: "г. Москва, ул. Ленина, д. 10, кв. 5"
-    
+
     ClientAddressUpdate:
       type: object
       properties:
         address_text:
           type: string
           example: "г. Москва, ул. Ленина, д. 10, кв. 5"
-    
+
     Dish:
       type: object
+      required: [id, name, weight, calories, price]
       properties:
         id:
           type: integer
@@ -502,20 +547,10 @@ components:
         description:
           type: string
           example: "Сочный стейк из мраморной говядины"
-      required:
-        - id
-        - name
-        - weight
-        - calories
-        - price
-    
+
     DishCreate:
       type: object
-      required:
-        - name
-        - weight
-        - calories
-        - price
+      required: [name, weight, calories, price]
       properties:
         name:
           type: string
@@ -534,7 +569,7 @@ components:
         description:
           type: string
           example: "Сочный стейк из мраморной говядины"
-    
+
     DishUpdate:
       type: object
       properties:
@@ -555,9 +590,10 @@ components:
         description:
           type: string
           example: "Сочный стейк из мраморной говядины"
-    
+
     Photo:
       type: object
+      required: [id, path]
       properties:
         id:
           type: integer
@@ -565,26 +601,18 @@ components:
         path:
           type: string
           example: "/uploads/photos/dish1.jpg"
-      required:
-        - id
-        - path
-    
-    PhotoCreate:
+
+    Avatar:
       type: object
-      required:
-        - path
+      required: [id, path]
       properties:
+        id:
+          type: integer
+          example: 1
         path:
           type: string
-          example: "/uploads/photos/dish1.jpg"
-    
-    PhotoUpdate:
-      type: object
-      properties:
-        path:
-          type: string
-          example: "/uploads/photos/dish1.jpg"
-    
+          example: "/uploads/avatars/a3f1c2d4-uuid.jpg"
+
     DishPhoto:
       type: object
       properties:
@@ -598,47 +626,18 @@ components:
           $ref: '#/components/schemas/Dish'
         photo:
           $ref: '#/components/schemas/Photo'
-    
+
     DishPhotoCreate:
       type: object
-      required:
-        - photo_id
+      required: [photo_id]
       properties:
         photo_id:
           type: integer
           example: 1
-    
-    Avatar:
-      type: object
-      properties:
-        id:
-          type: integer
-          example: 1
-        path:
-          type: string
-          example: "/uploads/avatars/user1.jpg"
-      required:
-        - id
-        - path
-    
-    AvatarCreate:
-      type: object
-      required:
-        - path
-      properties:
-        path:
-          type: string
-          example: "/uploads/avatars/user1.jpg"
-    
-    AvatarUpdate:
-      type: object
-      properties:
-        path:
-          type: string
-          example: "/uploads/avatars/user1.jpg"
-    
+
     Menu:
       type: object
+      required: [id, name, seasonality, is_active]
       properties:
         id:
           type: integer
@@ -652,17 +651,10 @@ components:
         is_active:
           type: boolean
           example: true
-      required:
-        - id
-        - name
-        - seasonality
-        - is_active
-    
+
     MenuCreate:
       type: object
-      required:
-        - name
-        - seasonality
+      required: [name, seasonality]
       properties:
         name:
           type: string
@@ -674,7 +666,7 @@ components:
           type: boolean
           default: false
           example: true
-    
+
     MenuUpdate:
       type: object
       properties:
@@ -687,7 +679,7 @@ components:
         is_active:
           type: boolean
           example: true
-    
+
     MenuDish:
       type: object
       properties:
@@ -701,18 +693,18 @@ components:
           $ref: '#/components/schemas/Menu'
         dish:
           $ref: '#/components/schemas/Dish'
-    
+
     MenuDishCreate:
       type: object
-      required:
-        - dish_id
+      required: [dish_id]
       properties:
         dish_id:
           type: integer
           example: 1
-    
+
     Ingredient:
       type: object
+      required: [id, name]
       properties:
         id:
           type: integer
@@ -720,26 +712,22 @@ components:
         name:
           type: string
           example: "Говядина"
-      required:
-        - id
-        - name
-    
+
     IngredientCreate:
       type: object
-      required:
-        - name
+      required: [name]
       properties:
         name:
           type: string
           example: "Говядина"
-    
+
     IngredientUpdate:
       type: object
       properties:
         name:
           type: string
           example: "Говядина"
-    
+
     DishIngredient:
       type: object
       properties:
@@ -753,47 +741,29 @@ components:
           $ref: '#/components/schemas/Dish'
         ingredient:
           $ref: '#/components/schemas/Ingredient'
-    
+
     DishIngredientCreate:
       type: object
-      required:
-        - ingredient_id
+      required: [ingredient_id]
       properties:
         ingredient_id:
           type: integer
           example: 1
-    
+
     OrderStatus:
       type: object
+      required: [id, status_name]
       properties:
         id:
           type: integer
           example: 1
         status_name:
           type: string
-          example: "Новый"
-      required:
-        - id
-        - status_name
-    
-    OrderStatusCreate:
-      type: object
-      required:
-        - status_name
-      properties:
-        status_name:
-          type: string
-          example: "Новый"
-    
-    OrderStatusUpdate:
-      type: object
-      properties:
-        status_name:
-          type: string
-          example: "Новый"
-    
+          example: "NEW"
+
     Order:
       type: object
+      required: [id, client_id, address_id, total_price, created_at]
       properties:
         id:
           type: integer
@@ -820,21 +790,18 @@ components:
           example: 3
         courier:
           $ref: '#/components/schemas/Employee'
+        total_price:
+          type: number
+          format: decimal
+          example: 2400.00
         created_at:
           type: string
           format: date-time
           example: "2024-01-15T10:30:00Z"
-      required:
-        - id
-        - client_id
-        - address_id
-        - created_at
-    
+
     OrderCreate:
       type: object
-      required:
-        - address_id
-        - items
+      required: [address_id, items]
       properties:
         address_id:
           type: integer
@@ -843,9 +810,7 @@ components:
           type: array
           items:
             type: object
-            required:
-              - dish_id
-              - quantity
+            required: [dish_id, quantity]
             properties:
               dish_id:
                 type: integer
@@ -854,7 +819,7 @@ components:
                 type: integer
                 minimum: 1
                 example: 2
-    
+
     OrderUpdate:
       type: object
       properties:
@@ -869,9 +834,10 @@ components:
           type: integer
           nullable: true
           example: 3
-    
+
     OrderStatusHistory:
       type: object
+      required: [id, order_id, status_id, changed_at]
       properties:
         id:
           type: integer
@@ -905,16 +871,10 @@ components:
         comment:
           type: string
           example: "Заказ доставлен"
-      required:
-        - id
-        - order_id
-        - status_id
-        - changed_at
-    
+
     OrderStatusHistoryCreate:
       type: object
-      required:
-        - status_id
+      required: [status_id]
       properties:
         status_id:
           type: integer
@@ -922,9 +882,10 @@ components:
         comment:
           type: string
           example: "Заказ доставлен"
-    
+
     OrderItem:
       type: object
+      required: [id, order_id, dish_id, quantity, price_at_moment]
       properties:
         id:
           type: integer
@@ -942,17 +903,14 @@ components:
         quantity:
           type: integer
           example: 2
-      required:
-        - id
-        - order_id
-        - dish_id
-        - quantity
-    
+        price_at_moment:
+          type: number
+          format: decimal
+          example: 1200.00
+
     OrderItemCreate:
       type: object
-      required:
-        - dish_id
-        - quantity
+      required: [dish_id, quantity]
       properties:
         dish_id:
           type: integer
@@ -961,7 +919,7 @@ components:
           type: integer
           minimum: 1
           example: 2
-    
+
     OrderItemUpdate:
       type: object
       properties:
@@ -972,8 +930,7 @@ components:
           type: integer
           minimum: 1
           example: 2
-    
-    # List response schemas
+
     RolesList:
       type: object
       properties:
@@ -984,7 +941,7 @@ components:
         total:
           type: integer
           example: 3
-    
+
     EmployeesList:
       type: object
       properties:
@@ -995,7 +952,7 @@ components:
         total:
           type: integer
           example: 10
-    
+
     ClientsList:
       type: object
       properties:
@@ -1006,7 +963,7 @@ components:
         total:
           type: integer
           example: 50
-    
+
     ClientAddressesList:
       type: object
       properties:
@@ -1017,7 +974,7 @@ components:
         total:
           type: integer
           example: 5
-    
+
     DishesList:
       type: object
       properties:
@@ -1028,18 +985,7 @@ components:
         total:
           type: integer
           example: 30
-    
-    PhotosList:
-      type: object
-      properties:
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/Photo'
-        total:
-          type: integer
-          example: 50
-    
+
     MenusList:
       type: object
       properties:
@@ -1050,7 +996,7 @@ components:
         total:
           type: integer
           example: 4
-    
+
     IngredientsList:
       type: object
       properties:
@@ -1061,7 +1007,7 @@ components:
         total:
           type: integer
           example: 20
-    
+
     OrderStatusesList:
       type: object
       properties:
@@ -1072,7 +1018,7 @@ components:
         total:
           type: integer
           example: 5
-    
+
     OrdersList:
       type: object
       properties:
@@ -1083,7 +1029,7 @@ components:
         total:
           type: integer
           example: 100
-    
+
     OrderStatusHistoryList:
       type: object
       properties:
@@ -1094,7 +1040,7 @@ components:
         total:
           type: integer
           example: 10
-    
+
     OrderItemsList:
       type: object
       properties:
@@ -1107,16 +1053,11 @@ components:
           example: 5
 
 paths:
-  # Authentication endpoints for employees
   /auth/employees/login:
     post:
-      tags:
-        - Authentication (Employees)
+      tags: [Authentication (Employees)]
       summary: Вход сотрудника
-      description: |
-        Аутентификация сотрудника по логину и паролю. Возвращает access и refresh токены.
-        
-        Доступ: Публичный (без авторизации)
+      description: "Доступ: Публичный"
       operationId: employeeLogin
       requestBody:
         required: true
@@ -1124,9 +1065,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/EmployeeLoginRequest'
-            example:
-              login: "manager1"
-              password: "password123"
       responses:
         '200':
           description: Успешная аутентификация
@@ -1134,20 +1072,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/TokenResponse'
-              example:
-                access_token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-                refresh_token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-                token_type: "Bearer"
-                expires_in: 3600
         '401':
           description: Неверные учетные данные
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: "Unauthorized"
-                message: "Invalid login or password"
         '422':
           description: Ошибка валидации
           content:
@@ -1160,21 +1090,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: "Internal Server Error"
-                exception: "An unexpected error occurred while processing the request"
-                message: "Please try again later or contact support if the problem persists"
-                timestamp: "2024-01-15T10:30:00Z"
-  
+
   /auth/employees/refresh:
     post:
-      tags:
-        - Authentication (Employees)
+      tags: [Authentication (Employees)]
       summary: Обновление access токена сотрудника
-      description: |
-        Обновление access токена с использованием refresh токена.
-        
-        Доступ: Публичный (без авторизации)
+      description: "Доступ: Публичный"
       operationId: employeeRefreshToken
       requestBody:
         required: true
@@ -1182,8 +1103,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/RefreshTokenRequest'
-            example:
-              refresh_token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
       responses:
         '200':
           description: Токен успешно обновлен
@@ -1197,9 +1116,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: "Unauthorized"
-                message: "Invalid or expired refresh token"
         '422':
           description: Ошибка валидации
           content:
@@ -1212,22 +1128,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: "Internal Server Error"
-                exception: "An unexpected error occurred while processing the request"
-                message: "Please try again later or contact support if the problem persists"
-                timestamp: "2024-01-15T10:30:00Z"
-  
-  # Authentication endpoints for clients
+
   /auth/clients/register:
     post:
-      tags:
-        - Authentication (Clients)
+      tags: [Authentication (Clients)]
       summary: Регистрация нового клиента
-      description: |
-        Регистрация нового клиента в системе. После успешной регистрации возвращаются access и refresh токены.
-        
-        Доступ: Публичный (без авторизации)
+      description: "Доступ: Публичный"
       operationId: clientRegister
       requestBody:
         required: true
@@ -1235,14 +1141,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/ClientRegisterRequest'
-            example:
-              first_name: "Иван"
-              last_name: "Иванов"
-              middle_name: "Петрович"
-              login: "client1"
-              password: "password123"
-              email: "ivan@example.com"
-              phone: "+79001234567"
       responses:
         '201':
           description: Клиент успешно зарегистрирован
@@ -1250,20 +1148,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/TokenResponse'
-              example:
-                access_token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-                refresh_token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-                token_type: "Bearer"
-                expires_in: 3600
         '400':
-          description: Клиент с таким логином или email уже существует
+          description: Логин или email уже заняты
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: "Bad Request"
-                message: "Client with this login or email already exists"
         '422':
           description: Ошибка валидации
           content:
@@ -1276,21 +1166,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: "Internal Server Error"
-                exception: "An unexpected error occurred while processing the request"
-                message: "Please try again later or contact support if the problem persists"
-                timestamp: "2024-01-15T10:30:00Z"
-  
+
   /auth/clients/login:
     post:
-      tags:
-        - Authentication (Clients)
+      tags: [Authentication (Clients)]
       summary: Вход клиента
-      description: |
-        Аутентификация клиента по логину и паролю. Возвращает access и refresh токены.
-        
-        Доступ: Публичный (без авторизации)
+      description: "Доступ: Публичный"
       operationId: clientLogin
       requestBody:
         required: true
@@ -1298,9 +1179,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/ClientLoginRequest'
-            example:
-              login: "client1"
-              password: "password123"
       responses:
         '200':
           description: Успешная аутентификация
@@ -1308,20 +1186,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/TokenResponse'
-              example:
-                access_token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-                refresh_token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-                token_type: "Bearer"
-                expires_in: 3600
         '401':
           description: Неверные учетные данные
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: "Unauthorized"
-                message: "Invalid login or password"
         '422':
           description: Ошибка валидации
           content:
@@ -1334,21 +1204,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: "Internal Server Error"
-                exception: "An unexpected error occurred while processing the request"
-                message: "Please try again later or contact support if the problem persists"
-                timestamp: "2024-01-15T10:30:00Z"
-  
+
   /auth/clients/refresh:
     post:
-      tags:
-        - Authentication (Clients)
+      tags: [Authentication (Clients)]
       summary: Обновление access токена клиента
-      description: |
-        Обновление access токена с использованием refresh токена.
-        
-        Доступ: Публичный (без авторизации)
+      description: "Доступ: Публичный"
       operationId: clientRefreshToken
       requestBody:
         required: true
@@ -1356,8 +1217,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/RefreshTokenRequest'
-            example:
-              refresh_token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
       responses:
         '200':
           description: Токен успешно обновлен
@@ -1371,9 +1230,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: "Unauthorized"
-                message: "Invalid or expired refresh token"
         '422':
           description: Ошибка валидации
           content:
@@ -1386,28 +1242,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: "Internal Server Error"
-                exception: "An unexpected error occurred while processing the request"
-                message: "Please try again later or contact support if the problem persists"
-                timestamp: "2024-01-15T10:30:00Z"
-  
-  # Roles endpoints
+
   /roles:
     get:
-      tags:
-        - Roles
+      tags: [Roles]
       summary: Получить список ролей
-      description: |
-        Возвращает список всех ролей сотрудников в системе.
-        
-        Доступ: Admin
+      description: "Доступ: Admin"
       operationId: getRoles
       security:
         - jwtEmployee: []
       responses:
         '200':
-          description: Список ролей успешно получен
+          description: Список ролей
           content:
             application/json:
               schema:
@@ -1419,7 +1265,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: Недостаточно прав доступа
+          description: Недостаточно прав
           content:
             application/json:
               schema:
@@ -1430,21 +1276,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: "Internal Server Error"
-                exception: "An unexpected error occurred while processing the request"
-                message: "Please try again later or contact support if the problem persists"
-                timestamp: "2024-01-15T10:30:00Z"
-  
+
   /roles/{id}:
     get:
-      tags:
-        - Roles
+      tags: [Roles]
       summary: Получить роль по ID
-      description: |
-        Возвращает информацию о конкретной роли.
-        
-        Доступ: Admin
+      description: "Доступ: Admin"
       operationId: getRoleById
       security:
         - jwtEmployee: []
@@ -1454,10 +1291,9 @@ paths:
           required: true
           schema:
             type: integer
-          description: ID роли
       responses:
         '200':
-          description: Роль успешно получена
+          description: Роль
           content:
             application/json:
               schema:
@@ -1469,13 +1305,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: Недостаточно прав доступа
+          description: Недостаточно прав
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: Роль не найдена
+          description: Не найдено
           content:
             application/json:
               schema:
@@ -1486,22 +1322,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: "Internal Server Error"
-                exception: "An unexpected error occurred while processing the request"
-                message: "Please try again later or contact support if the problem persists"
-                timestamp: "2024-01-15T10:30:00Z"
-  
-  # Employees endpoints
+
   /employees:
     get:
-      tags:
-        - Employees
+      tags: [Employees]
       summary: Получить список сотрудников
-      description: |
-        Возвращает список всех сотрудников в системе.
-        
-        Доступ: Admin, Manager
+      description: "Доступ: Admin, Manager"
       operationId: getEmployees
       security:
         - jwtEmployee: []
@@ -1510,15 +1336,13 @@ paths:
           in: query
           schema:
             type: integer
-          description: Фильтр по роли
         - name: is_working
           in: query
           schema:
             type: boolean
-          description: Фильтр по статусу работы (для курьеров)
       responses:
         '200':
-          description: Список сотрудников успешно получен
+          description: Список сотрудников
           content:
             application/json:
               schema:
@@ -1530,7 +1354,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: Недостаточно прав доступа
+          description: Недостаточно прав
           content:
             application/json:
               schema:
@@ -1541,20 +1365,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: "Internal Server Error"
-                exception: "An unexpected error occurred while processing the request"
-                message: "Please try again later or contact support if the problem persists"
-                timestamp: "2024-01-15T10:30:00Z"
-    
     post:
-      tags:
-        - Employees
-      summary: Создать нового сотрудника
-      description: |
-        Создает нового сотрудника в системе.
-        
-        Доступ: Admin
+      tags: [Employees]
+      summary: Создать сотрудника
+      description: "Доступ: Admin"
       operationId: createEmployee
       security:
         - jwtEmployee: []
@@ -1566,13 +1380,13 @@ paths:
               $ref: '#/components/schemas/EmployeeCreate'
       responses:
         '201':
-          description: Сотрудник успешно создан
+          description: Сотрудник создан
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Employee'
         '400':
-          description: Ошибка валидации данных
+          description: Логин уже занят
           content:
             application/json:
               schema:
@@ -1584,7 +1398,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: Недостаточно прав доступа
+          description: Недостаточно прав
           content:
             application/json:
               schema:
@@ -1601,21 +1415,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: "Internal Server Error"
-                exception: "An unexpected error occurred while processing the request"
-                message: "Please try again later or contact support if the problem persists"
-                timestamp: "2024-01-15T10:30:00Z"
-  
+
   /employees/{id}:
     get:
-      tags:
-        - Employees
+      tags: [Employees]
       summary: Получить сотрудника по ID
-      description: |
-        Возвращает информацию о конкретном сотруднике. Сотрудники могут получить информацию о себе.
-        
-        Доступ: Admin, Manager (любой сотрудник), Employee (только свой профиль)
+      description: "Доступ: Admin, Manager (любой), Employee (только себя)"
       operationId: getEmployeeById
       security:
         - jwtEmployee: []
@@ -1625,10 +1430,9 @@ paths:
           required: true
           schema:
             type: integer
-          description: ID сотрудника
       responses:
         '200':
-          description: Сотрудник успешно получен
+          description: Сотрудник
           content:
             application/json:
               schema:
@@ -1640,13 +1444,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: Недостаточно прав доступа
+          description: Недостаточно прав
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: Сотрудник не найден
+          description: Не найдено
           content:
             application/json:
               schema:
@@ -1657,20 +1461,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: "Internal Server Error"
-                exception: "An unexpected error occurred while processing the request"
-                message: "Please try again later or contact support if the problem persists"
-                timestamp: "2024-01-15T10:30:00Z"
-    
     put:
-      tags:
-        - Employees
+      tags: [Employees]
       summary: Полное обновление сотрудника
-      description: |
-        Полностью обновляет информацию о сотруднике.
-        
-        Доступ: Admin
+      description: "Доступ: Admin"
       operationId: updateEmployee
       security:
         - jwtEmployee: []
@@ -1680,26 +1474,19 @@ paths:
           required: true
           schema:
             type: integer
-          description: ID сотрудника
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/EmployeeUpdate'
+              $ref: '#/components/schemas/EmployeePut'
       responses:
         '200':
-          description: Сотрудник успешно обновлен
+          description: Сотрудник обновлен
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Employee'
-        '400':
-          description: Ошибка валидации данных
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
         '401':
           description: Не авторизован
           content:
@@ -1707,13 +1494,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: Недостаточно прав доступа
+          description: Недостаточно прав
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: Сотрудник не найден
+          description: Не найдено
           content:
             application/json:
               schema:
@@ -1730,20 +1517,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: "Internal Server Error"
-                exception: "An unexpected error occurred while processing the request"
-                message: "Please try again later or contact support if the problem persists"
-                timestamp: "2024-01-15T10:30:00Z"
-    
     patch:
-      tags:
-        - Employees
+      tags: [Employees]
       summary: Частичное обновление сотрудника
-      description: |
-        Частично обновляет информацию о сотруднике. Manager может обновлять только подчиненных.
-        
-        Доступ: Admin, Manager (для подчиненных)
+      description: "Доступ: Admin, Manager (для подчиненных)"
       operationId: patchEmployee
       security:
         - jwtEmployee: []
@@ -1753,7 +1530,6 @@ paths:
           required: true
           schema:
             type: integer
-          description: ID сотрудника
       requestBody:
         required: true
         content:
@@ -1762,17 +1538,11 @@ paths:
               $ref: '#/components/schemas/EmployeeUpdate'
       responses:
         '200':
-          description: Сотрудник успешно обновлен
+          description: Сотрудник обновлен
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Employee'
-        '400':
-          description: Ошибка валидации данных
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
         '401':
           description: Не авторизован
           content:
@@ -1780,13 +1550,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: Недостаточно прав доступа
+          description: Недостаточно прав
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: Сотрудник не найден
+          description: Не найдено
           content:
             application/json:
               schema:
@@ -1803,20 +1573,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: "Internal Server Error"
-                exception: "An unexpected error occurred while processing the request"
-                message: "Please try again later or contact support if the problem persists"
-                timestamp: "2024-01-15T10:30:00Z"
-    
     delete:
-      tags:
-        - Employees
+      tags: [Employees]
       summary: Удалить сотрудника
-      description: |
-        Удаляет сотрудника из системы.
-        
-        Доступ: Admin
+      description: "Доступ: Admin"
       operationId: deleteEmployee
       security:
         - jwtEmployee: []
@@ -1826,10 +1586,9 @@ paths:
           required: true
           schema:
             type: integer
-          description: ID сотрудника
       responses:
         '204':
-          description: Сотрудник успешно удален
+          description: Сотрудник удален
         '401':
           description: Не авторизован
           content:
@@ -1837,13 +1596,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: Недостаточно прав доступа
+          description: Недостаточно прав
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: Сотрудник не найден
+          description: Не найдено
           content:
             application/json:
               schema:
@@ -1854,28 +1613,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: "Internal Server Error"
-                exception: "An unexpected error occurred while processing the request"
-                message: "Please try again later or contact support if the problem persists"
-                timestamp: "2024-01-15T10:30:00Z"
-  
-  # Clients endpoints
+
   /clients:
     get:
-      tags:
-        - Clients
+      tags: [Clients]
       summary: Получить список клиентов
-      description: |
-        Возвращает список всех клиентов в системе.
-        
-        Доступ: Admin, Manager
+      description: "Доступ: Admin, Manager"
       operationId: getClients
       security:
         - jwtEmployee: []
       responses:
         '200':
-          description: Список клиентов успешно получен
+          description: Список клиентов
           content:
             application/json:
               schema:
@@ -1887,7 +1636,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: Недостаточно прав доступа
+          description: Недостаточно прав
           content:
             application/json:
               schema:
@@ -1898,20 +1647,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: "Internal Server Error"
-                exception: "An unexpected error occurred while processing the request"
-                message: "Please try again later or contact support if the problem persists"
-                timestamp: "2024-01-15T10:30:00Z"
-    
     post:
-      tags:
-        - Clients
-      summary: Создать нового клиента
-      description: |
-        Создает нового клиента в системе. Используется администраторами и менеджерами для ручного создания клиентов.
-        
-        Доступ: Admin, Manager
+      tags: [Clients]
+      summary: Создать клиента
+      description: "Доступ: Admin, Manager"
       operationId: createClient
       security:
         - jwtEmployee: []
@@ -1923,13 +1662,13 @@ paths:
               $ref: '#/components/schemas/ClientCreate'
       responses:
         '201':
-          description: Клиент успешно создан
+          description: Клиент создан
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Client'
         '400':
-          description: Ошибка валидации данных
+          description: Логин или email уже заняты
           content:
             application/json:
               schema:
@@ -1941,7 +1680,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: Недостаточно прав доступа
+          description: Недостаточно прав
           content:
             application/json:
               schema:
@@ -1958,21 +1697,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: "Internal Server Error"
-                exception: "An unexpected error occurred while processing the request"
-                message: "Please try again later or contact support if the problem persists"
-                timestamp: "2024-01-15T10:30:00Z"
-  
+
   /clients/{id}:
     get:
-      tags:
-        - Clients
+      tags: [Clients]
       summary: Получить клиента по ID
-      description: |
-        Возвращает информацию о конкретном клиенте. Клиенты могут получить информацию о себе.
-        
-        Доступ: Admin, Manager (любой клиент), Client (только свой профиль)
+      description: "Доступ: Admin, Manager (любой), Client (только себя)"
       operationId: getClientById
       security:
         - jwtEmployee: []
@@ -1983,10 +1713,9 @@ paths:
           required: true
           schema:
             type: integer
-          description: ID клиента
       responses:
         '200':
-          description: Клиент успешно получен
+          description: Клиент
           content:
             application/json:
               schema:
@@ -1998,13 +1727,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: Недостаточно прав доступа
+          description: Недостаточно прав
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: Клиент не найден
+          description: Не найдено
           content:
             application/json:
               schema:
@@ -2015,20 +1744,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: "Internal Server Error"
-                exception: "An unexpected error occurred while processing the request"
-                message: "Please try again later or contact support if the problem persists"
-                timestamp: "2024-01-15T10:30:00Z"
-    
     put:
-      tags:
-        - Clients
+      tags: [Clients]
       summary: Полное обновление клиента
-      description: |
-        Полностью обновляет информацию о клиенте.
-        
-        Доступ: Admin, Manager
+      description: "Доступ: Admin, Manager"
       operationId: updateClient
       security:
         - jwtEmployee: []
@@ -2038,26 +1757,19 @@ paths:
           required: true
           schema:
             type: integer
-          description: ID клиента
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ClientUpdate'
+              $ref: '#/components/schemas/ClientPut'
       responses:
         '200':
-          description: Клиент успешно обновлен
+          description: Клиент обновлен
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Client'
-        '400':
-          description: Ошибка валидации данных
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
         '401':
           description: Не авторизован
           content:
@@ -2065,13 +1777,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: Недостаточно прав доступа
+          description: Недостаточно прав
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: Клиент не найден
+          description: Не найдено
           content:
             application/json:
               schema:
@@ -2088,20 +1800,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: "Internal Server Error"
-                exception: "An unexpected error occurred while processing the request"
-                message: "Please try again later or contact support if the problem persists"
-                timestamp: "2024-01-15T10:30:00Z"
-    
     patch:
-      tags:
-        - Clients
+      tags: [Clients]
       summary: Частичное обновление клиента
-      description: |
-        Частично обновляет информацию о клиенте. Клиенты могут обновлять только свои данные.
-        
-        Доступ: Admin, Manager, Client (для себя)
+      description: "Доступ: Admin, Manager, Client (для себя)"
       operationId: patchClient
       security:
         - jwtEmployee: []
@@ -2112,7 +1814,6 @@ paths:
           required: true
           schema:
             type: integer
-          description: ID клиента
       requestBody:
         required: true
         content:
@@ -2121,17 +1822,11 @@ paths:
               $ref: '#/components/schemas/ClientUpdate'
       responses:
         '200':
-          description: Клиент успешно обновлен
+          description: Клиент обновлен
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Client'
-        '400':
-          description: Ошибка валидации данных
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
         '401':
           description: Не авторизован
           content:
@@ -2139,13 +1834,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: Недостаточно прав доступа
+          description: Недостаточно прав
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: Клиент не найден
+          description: Не найдено
           content:
             application/json:
               schema:
@@ -2162,20 +1857,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: "Internal Server Error"
-                exception: "An unexpected error occurred while processing the request"
-                message: "Please try again later or contact support if the problem persists"
-                timestamp: "2024-01-15T10:30:00Z"
-    
     delete:
-      tags:
-        - Clients
+      tags: [Clients]
       summary: Удалить клиента
-      description: |
-        Удаляет клиента из системы.
-        
-        Доступ: Admin
+      description: "Доступ: Admin"
       operationId: deleteClient
       security:
         - jwtEmployee: []
@@ -2185,10 +1870,9 @@ paths:
           required: true
           schema:
             type: integer
-          description: ID клиента
       responses:
         '204':
-          description: Клиент успешно удален
+          description: Клиент удален
         '401':
           description: Не авторизован
           content:
@@ -2196,13 +1880,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: Недостаточно прав доступа
+          description: Недостаточно прав
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: Клиент не найден
+          description: Не найдено
           content:
             application/json:
               schema:
@@ -2213,22 +1897,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: "Internal Server Error"
-                exception: "An unexpected error occurred while processing the request"
-                message: "Please try again later or contact support if the problem persists"
-                timestamp: "2024-01-15T10:30:00Z"
-  
-  # Client Addresses endpoints
+
   /clients/{clientId}/addresses:
     get:
-      tags:
-        - Client Addresses
-      summary: Получить список адресов клиента
-      description: |
-        Возвращает список всех адресов конкретного клиента.
-        
-        Доступ: Admin, Manager, Client (только свои адреса)
+      tags: [Client Addresses]
+      summary: Получить адреса клиента
+      description: "Доступ: Admin, Manager, Client (только свои)"
       operationId: getClientAddresses
       security:
         - jwtEmployee: []
@@ -2239,10 +1913,9 @@ paths:
           required: true
           schema:
             type: integer
-          description: ID клиента
       responses:
         '200':
-          description: Список адресов успешно получен
+          description: Список адресов
           content:
             application/json:
               schema:
@@ -2254,7 +1927,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: Недостаточно прав доступа
+          description: Недостаточно прав
           content:
             application/json:
               schema:
@@ -2271,20 +1944,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: "Internal Server Error"
-                exception: "An unexpected error occurred while processing the request"
-                message: "Please try again later or contact support if the problem persists"
-                timestamp: "2024-01-15T10:30:00Z"
-    
     post:
-      tags:
-        - Client Addresses
-      summary: Создать новый адрес клиента
-      description: |
-        Создает новый адрес для клиента.
-        
-        Доступ: Admin, Manager, Client (для себя)
+      tags: [Client Addresses]
+      summary: Создать адрес клиента
+      description: "Доступ: Admin, Manager, Client (для себя)"
       operationId: createClientAddress
       security:
         - jwtEmployee: []
@@ -2295,7 +1958,6 @@ paths:
           required: true
           schema:
             type: integer
-          description: ID клиента
       requestBody:
         required: true
         content:
@@ -2304,17 +1966,11 @@ paths:
               $ref: '#/components/schemas/ClientAddressCreate'
       responses:
         '201':
-          description: Адрес успешно создан
+          description: Адрес создан
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ClientAddress'
-        '400':
-          description: Ошибка валидации данных
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
         '401':
           description: Не авторизован
           content:
@@ -2322,7 +1978,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: Недостаточно прав доступа
+          description: Недостаточно прав
           content:
             application/json:
               schema:
@@ -2345,21 +2001,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: "Internal Server Error"
-                exception: "An unexpected error occurred while processing the request"
-                message: "Please try again later or contact support if the problem persists"
-                timestamp: "2024-01-15T10:30:00Z"
-  
+
   /clients/{clientId}/addresses/{id}:
     get:
-      tags:
-        - Client Addresses
-      summary: Получить адрес клиента по ID
-      description: |
-        Возвращает информацию о конкретном адресе клиента.
-        
-        Доступ: Admin, Manager, Client (только свои адреса)
+      tags: [Client Addresses]
+      summary: Получить адрес по ID
+      description: "Доступ: Admin, Manager, Client (только свои)"
       operationId: getClientAddressById
       security:
         - jwtEmployee: []
@@ -2370,16 +2017,14 @@ paths:
           required: true
           schema:
             type: integer
-          description: ID клиента
         - name: id
           in: path
           required: true
           schema:
             type: integer
-          description: ID адреса
       responses:
         '200':
-          description: Адрес успешно получен
+          description: Адрес
           content:
             application/json:
               schema:
@@ -2391,13 +2036,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: Недостаточно прав доступа
+          description: Недостаточно прав
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: Адрес не найден
+          description: Не найдено
           content:
             application/json:
               schema:
@@ -2408,20 +2053,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: "Internal Server Error"
-                exception: "An unexpected error occurred while processing the request"
-                message: "Please try again later or contact support if the problem persists"
-                timestamp: "2024-01-15T10:30:00Z"
-    
     put:
-      tags:
-        - Client Addresses
-      summary: Полное обновление адреса клиента
-      description: |
-        Полностью обновляет информацию об адресе клиента.
-        
-        Доступ: Admin, Manager, Client (для своих адресов)
+      tags: [Client Addresses]
+      summary: Полное обновление адреса
+      description: "Доступ: Admin, Manager, Client (для своих)"
       operationId: updateClientAddress
       security:
         - jwtEmployee: []
@@ -2432,13 +2067,11 @@ paths:
           required: true
           schema:
             type: integer
-          description: ID клиента
         - name: id
           in: path
           required: true
           schema:
             type: integer
-          description: ID адреса
       requestBody:
         required: true
         content:
@@ -2447,17 +2080,11 @@ paths:
               $ref: '#/components/schemas/ClientAddressUpdate'
       responses:
         '200':
-          description: Адрес успешно обновлен
+          description: Адрес обновлен
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ClientAddress'
-        '400':
-          description: Ошибка валидации данных
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
         '401':
           description: Не авторизован
           content:
@@ -2465,13 +2092,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: Недостаточно прав доступа
+          description: Недостаточно прав
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: Адрес не найден
+          description: Не найдено
           content:
             application/json:
               schema:
@@ -2488,20 +2115,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: "Internal Server Error"
-                exception: "An unexpected error occurred while processing the request"
-                message: "Please try again later or contact support if the problem persists"
-                timestamp: "2024-01-15T10:30:00Z"
-    
     patch:
-      tags:
-        - Client Addresses
-      summary: Частичное обновление адреса клиента
-      description: |
-        Частично обновляет информацию об адресе клиента.
-        
-        Доступ: Admin, Manager, Client (для своих адресов)
+      tags: [Client Addresses]
+      summary: Частичное обновление адреса
+      description: "Доступ: Admin, Manager, Client (для своих)"
       operationId: patchClientAddress
       security:
         - jwtEmployee: []
@@ -2512,13 +2129,11 @@ paths:
           required: true
           schema:
             type: integer
-          description: ID клиента
         - name: id
           in: path
           required: true
           schema:
             type: integer
-          description: ID адреса
       requestBody:
         required: true
         content:
@@ -2527,17 +2142,11 @@ paths:
               $ref: '#/components/schemas/ClientAddressUpdate'
       responses:
         '200':
-          description: Адрес успешно обновлен
+          description: Адрес обновлен
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ClientAddress'
-        '400':
-          description: Ошибка валидации данных
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
         '401':
           description: Не авторизован
           content:
@@ -2545,13 +2154,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: Недостаточно прав доступа
+          description: Недостаточно прав
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: Адрес не найден
+          description: Не найдено
           content:
             application/json:
               schema:
@@ -2568,20 +2177,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: "Internal Server Error"
-                exception: "An unexpected error occurred while processing the request"
-                message: "Please try again later or contact support if the problem persists"
-                timestamp: "2024-01-15T10:30:00Z"
-    
     delete:
-      tags:
-        - Client Addresses
-      summary: Удалить адрес клиента
-      description: |
-        Удаляет адрес клиента из системы.
-        
-        Доступ: Admin, Manager, Client (для своих адресов)
+      tags: [Client Addresses]
+      summary: Удалить адрес
+      description: "Доступ: Admin, Manager, Client (для своих)"
       operationId: deleteClientAddress
       security:
         - jwtEmployee: []
@@ -2592,16 +2191,14 @@ paths:
           required: true
           schema:
             type: integer
-          description: ID клиента
         - name: id
           in: path
           required: true
           schema:
             type: integer
-          description: ID адреса
       responses:
         '204':
-          description: Адрес успешно удален
+          description: Адрес удален
         '401':
           description: Не авторизован
           content:
@@ -2609,13 +2206,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: Недостаточно прав доступа
+          description: Недостаточно прав
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: Адрес не найден
+          description: Не найдено
           content:
             application/json:
               schema:
@@ -2626,29 +2223,19 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: "Internal Server Error"
-                exception: "An unexpected error occurred while processing the request"
-                message: "Please try again later or contact support if the problem persists"
-                timestamp: "2024-01-15T10:30:00Z"
-  
-  # Dishes endpoints
+
   /dishes:
     get:
-      tags:
-        - Dishes
+      tags: [Dishes]
       summary: Получить список блюд
-      description: |
-        Возвращает список всех блюд в системе.
-        
-        Доступ: Все авторизованные пользователи
+      description: "Доступ: Все авторизованные"
       operationId: getDishes
       security:
         - jwtEmployee: []
         - jwtClient: []
       responses:
         '200':
-          description: Список блюд успешно получен
+          description: Список блюд
           content:
             application/json:
               schema:
@@ -2665,20 +2252,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: "Internal Server Error"
-                exception: "An unexpected error occurred while processing the request"
-                message: "Please try again later or contact support if the problem persists"
-                timestamp: "2024-01-15T10:30:00Z"
-    
     post:
-      tags:
-        - Dishes
-      summary: Создать новое блюдо
-      description: |
-        Создает новое блюдо в системе.
-        
-        Доступ: Admin, Manager
+      tags: [Dishes]
+      summary: Создать блюдо
+      description: "Доступ: Admin, Manager"
       operationId: createDish
       security:
         - jwtEmployee: []
@@ -2690,17 +2267,11 @@ paths:
               $ref: '#/components/schemas/DishCreate'
       responses:
         '201':
-          description: Блюдо успешно создано
+          description: Блюдо создано
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Dish'
-        '400':
-          description: Ошибка валидации данных
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
         '401':
           description: Не авторизован
           content:
@@ -2708,7 +2279,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: Недостаточно прав доступа
+          description: Недостаточно прав
           content:
             application/json:
               schema:
@@ -2725,21 +2296,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: "Internal Server Error"
-                exception: "An unexpected error occurred while processing the request"
-                message: "Please try again later or contact support if the problem persists"
-                timestamp: "2024-01-15T10:30:00Z"
-  
+
   /dishes/{id}:
     get:
-      tags:
-        - Dishes
+      tags: [Dishes]
       summary: Получить блюдо по ID
-      description: |
-        Возвращает информацию о конкретном блюде.
-        
-        Доступ: Все авторизованные пользователи
+      description: "Доступ: Все авторизованные"
       operationId: getDishById
       security:
         - jwtEmployee: []
@@ -2750,10 +2312,9 @@ paths:
           required: true
           schema:
             type: integer
-          description: ID блюда
       responses:
         '200':
-          description: Блюдо успешно получено
+          description: Блюдо
           content:
             application/json:
               schema:
@@ -2765,7 +2326,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: Блюдо не найдено
+          description: Не найдено
           content:
             application/json:
               schema:
@@ -2776,20 +2337,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: "Internal Server Error"
-                exception: "An unexpected error occurred while processing the request"
-                message: "Please try again later or contact support if the problem persists"
-                timestamp: "2024-01-15T10:30:00Z"
-    
     put:
-      tags:
-        - Dishes
+      tags: [Dishes]
       summary: Полное обновление блюда
-      description: |
-        Полностью обновляет информацию о блюде.
-        
-        Доступ: Admin, Manager
+      description: "Доступ: Admin, Manager"
       operationId: updateDish
       security:
         - jwtEmployee: []
@@ -2799,7 +2350,6 @@ paths:
           required: true
           schema:
             type: integer
-          description: ID блюда
       requestBody:
         required: true
         content:
@@ -2808,17 +2358,11 @@ paths:
               $ref: '#/components/schemas/DishUpdate'
       responses:
         '200':
-          description: Блюдо успешно обновлено
+          description: Блюдо обновлено
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Dish'
-        '400':
-          description: Ошибка валидации данных
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
         '401':
           description: Не авторизован
           content:
@@ -2826,13 +2370,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: Недостаточно прав доступа
+          description: Недостаточно прав
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: Блюдо не найдено
+          description: Не найдено
           content:
             application/json:
               schema:
@@ -2849,20 +2393,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: "Internal Server Error"
-                exception: "An unexpected error occurred while processing the request"
-                message: "Please try again later or contact support if the problem persists"
-                timestamp: "2024-01-15T10:30:00Z"
-    
     patch:
-      tags:
-        - Dishes
+      tags: [Dishes]
       summary: Частичное обновление блюда
-      description: |
-        Частично обновляет информацию о блюде.
-        
-        Доступ: Admin, Manager
+      description: "Доступ: Admin, Manager"
       operationId: patchDish
       security:
         - jwtEmployee: []
@@ -2872,7 +2406,6 @@ paths:
           required: true
           schema:
             type: integer
-          description: ID блюда
       requestBody:
         required: true
         content:
@@ -2881,17 +2414,11 @@ paths:
               $ref: '#/components/schemas/DishUpdate'
       responses:
         '200':
-          description: Блюдо успешно обновлено
+          description: Блюдо обновлено
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Dish'
-        '400':
-          description: Ошибка валидации данных
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
         '401':
           description: Не авторизован
           content:
@@ -2899,13 +2426,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: Недостаточно прав доступа
+          description: Недостаточно прав
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: Блюдо не найдено
+          description: Не найдено
           content:
             application/json:
               schema:
@@ -2922,20 +2449,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: "Internal Server Error"
-                exception: "An unexpected error occurred while processing the request"
-                message: "Please try again later or contact support if the problem persists"
-                timestamp: "2024-01-15T10:30:00Z"
-    
     delete:
-      tags:
-        - Dishes
+      tags: [Dishes]
       summary: Удалить блюдо
-      description: |
-        Удаляет блюдо из системы.
-        
-        Доступ: Admin, Manager
+      description: "Доступ: Admin, Manager"
       operationId: deleteDish
       security:
         - jwtEmployee: []
@@ -2945,10 +2462,9 @@ paths:
           required: true
           schema:
             type: integer
-          description: ID блюда
       responses:
         '204':
-          description: Блюдо успешно удалено
+          description: Блюдо удалено
         '401':
           description: Не авторизован
           content:
@@ -2956,13 +2472,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: Недостаточно прав доступа
+          description: Недостаточно прав
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: Блюдо не найдено
+          description: Не найдено
           content:
             application/json:
               schema:
@@ -2973,22 +2489,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: "Internal Server Error"
-                exception: "An unexpected error occurred while processing the request"
-                message: "Please try again later or contact support if the problem persists"
-                timestamp: "2024-01-15T10:30:00Z"
-  
-  # Dish Photos endpoints
+
   /dishes/{dishId}/photos:
     get:
-      tags:
-        - Dishes
-      summary: Получить список фотографий блюда
-      description: |
-        Возвращает список всех фотографий конкретного блюда.
-        
-        Доступ: Все авторизованные пользователи
+      tags: [Dishes]
+      summary: Получить фотографии блюда
+      description: "Доступ: Все авторизованные"
       operationId: getDishPhotos
       security:
         - jwtEmployee: []
@@ -2999,10 +2505,9 @@ paths:
           required: true
           schema:
             type: integer
-          description: ID блюда
       responses:
         '200':
-          description: Список фотографий успешно получен
+          description: Список фотографий
           content:
             application/json:
               schema:
@@ -3032,20 +2537,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: "Internal Server Error"
-                exception: "An unexpected error occurred while processing the request"
-                message: "Please try again later or contact support if the problem persists"
-                timestamp: "2024-01-15T10:30:00Z"
-    
     post:
-      tags:
-        - Dishes
-      summary: Привязать фотографию к блюду
-      description: |
-        Привязывает существующую фотографию к блюду.
-        
-        Доступ: Admin, Manager
+      tags: [Dishes]
+      summary: Привязать фото к блюду
+      description: "Доступ: Admin, Manager"
       operationId: createDishPhoto
       security:
         - jwtEmployee: []
@@ -3055,7 +2550,6 @@ paths:
           required: true
           schema:
             type: integer
-          description: ID блюда
       requestBody:
         required: true
         content:
@@ -3064,17 +2558,11 @@ paths:
               $ref: '#/components/schemas/DishPhotoCreate'
       responses:
         '201':
-          description: Фотография успешно привязана к блюду
+          description: Фото привязано
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/DishPhoto'
-        '400':
-          description: Ошибка валидации данных
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
         '401':
           description: Не авторизован
           content:
@@ -3082,13 +2570,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: Недостаточно прав доступа
+          description: Недостаточно прав
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: Блюдо или фотография не найдены
+          description: Блюдо или фото не найдены
           content:
             application/json:
               schema:
@@ -3105,21 +2593,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: "Internal Server Error"
-                exception: "An unexpected error occurred while processing the request"
-                message: "Please try again later or contact support if the problem persists"
-                timestamp: "2024-01-15T10:30:00Z"
-  
+
   /dishes/{dishId}/photos/{photoId}:
     delete:
-      tags:
-        - Dishes
-      summary: Отвязать фотографию от блюда
-      description: |
-        Отвязывает фотографию от блюда.
-        
-        Доступ: Admin, Manager
+      tags: [Dishes]
+      summary: Отвязать фото от блюда
+      description: "Доступ: Admin, Manager"
       operationId: deleteDishPhoto
       security:
         - jwtEmployee: []
@@ -3129,16 +2608,14 @@ paths:
           required: true
           schema:
             type: integer
-          description: ID блюда
         - name: photoId
           in: path
           required: true
           schema:
             type: integer
-          description: ID фотографии
       responses:
         '204':
-          description: Фотография успешно отвязана от блюда
+          description: Фото отвязано
         '401':
           description: Не авторизован
           content:
@@ -3146,7 +2623,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: Недостаточно прав доступа
+          description: Недостаточно прав
           content:
             application/json:
               schema:
@@ -3163,22 +2640,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: "Internal Server Error"
-                exception: "An unexpected error occurred while processing the request"
-                message: "Please try again later or contact support if the problem persists"
-                timestamp: "2024-01-15T10:30:00Z"
-  
-  # Dish Ingredients endpoints
+
   /dishes/{dishId}/ingredients:
     get:
-      tags:
-        - Dishes
-      summary: Получить список ингредиентов блюда
-      description: |
-        Возвращает список всех ингредиентов конкретного блюда.
-        
-        Доступ: Все авторизованные пользователи
+      tags: [Dishes]
+      summary: Получить ингредиенты блюда
+      description: "Доступ: Все авторизованные"
       operationId: getDishIngredients
       security:
         - jwtEmployee: []
@@ -3189,10 +2656,9 @@ paths:
           required: true
           schema:
             type: integer
-          description: ID блюда
       responses:
         '200':
-          description: Список ингредиентов успешно получен
+          description: Список ингредиентов
           content:
             application/json:
               schema:
@@ -3222,20 +2688,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: "Internal Server Error"
-                exception: "An unexpected error occurred while processing the request"
-                message: "Please try again later or contact support if the problem persists"
-                timestamp: "2024-01-15T10:30:00Z"
-    
     post:
-      tags:
-        - Dishes
+      tags: [Dishes]
       summary: Добавить ингредиент к блюду
-      description: |
-        Добавляет ингредиент к блюду.
-        
-        Доступ: Admin, Manager
+      description: "Доступ: Admin, Manager"
       operationId: createDishIngredient
       security:
         - jwtEmployee: []
@@ -3245,7 +2701,6 @@ paths:
           required: true
           schema:
             type: integer
-          description: ID блюда
       requestBody:
         required: true
         content:
@@ -3254,17 +2709,11 @@ paths:
               $ref: '#/components/schemas/DishIngredientCreate'
       responses:
         '201':
-          description: Ингредиент успешно добавлен к блюду
+          description: Ингредиент добавлен
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/DishIngredient'
-        '400':
-          description: Ошибка валидации данных
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
         '401':
           description: Не авторизован
           content:
@@ -3272,7 +2721,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: Недостаточно прав доступа
+          description: Недостаточно прав
           content:
             application/json:
               schema:
@@ -3295,21 +2744,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: "Internal Server Error"
-                exception: "An unexpected error occurred while processing the request"
-                message: "Please try again later or contact support if the problem persists"
-                timestamp: "2024-01-15T10:30:00Z"
-  
+
   /dishes/{dishId}/ingredients/{ingredientId}:
     delete:
-      tags:
-        - Dishes
+      tags: [Dishes]
       summary: Удалить ингредиент из блюда
-      description: |
-        Удаляет ингредиент из блюда.
-        
-        Доступ: Admin, Manager
+      description: "Доступ: Admin, Manager"
       operationId: deleteDishIngredient
       security:
         - jwtEmployee: []
@@ -3319,16 +2759,14 @@ paths:
           required: true
           schema:
             type: integer
-          description: ID блюда
         - name: ingredientId
           in: path
           required: true
           schema:
             type: integer
-          description: ID ингредиента
       responses:
         '204':
-          description: Ингредиент успешно удален из блюда
+          description: Ингредиент удален
         '401':
           description: Не авторизован
           content:
@@ -3336,7 +2774,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: Недостаточно прав доступа
+          description: Недостаточно прав
           content:
             application/json:
               schema:
@@ -3353,21 +2791,278 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: "Internal Server Error"
-                exception: "An unexpected error occurred while processing the request"
-                message: "Please try again later or contact support if the problem persists"
-                timestamp: "2024-01-15T10:30:00Z"
-  # Menus endpoints
+
+  /photos:
+    post:
+      tags: [Photos]
+      summary: Загрузить фото
+      description: "Доступ: Все авторизованные. Multipart-форма с полем 'file' (jpeg/png/webp, до 10 MB). Возвращает метаданные с URL для GET статики."
+      operationId: uploadPhoto
+      security:
+        - jwtEmployee: []
+        - jwtClient: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '201':
+          description: Фото загружено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Photo'
+        '400':
+          description: Неподдерживаемый формат файла
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '413':
+          description: Файл превышает лимит размера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /photos/{id}:
+    get:
+      tags: [Photos]
+      summary: Получить метаданные фото
+      description: "Доступ: Все авторизованные"
+      operationId: getPhotoById
+      security:
+        - jwtEmployee: []
+        - jwtClient: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Фото
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Photo'
+        '401':
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      tags: [Photos]
+      summary: Удалить фото
+      description: "Доступ: Admin, Manager. Удаляет файл с диска и запись из БД. Связки с блюдами через dish_photos удаляются каскадно."
+      operationId: deletePhoto
+      security:
+        - jwtEmployee: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Фото удалено
+        '401':
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Недостаточно прав
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /avatars:
+    post:
+      tags: [Avatars]
+      summary: Загрузить аватар
+      description: "Доступ: Все авторизованные. Multipart-форма с полем 'file' (jpeg/png/webp, до 10 MB). Возвращает метаданные с URL."
+      operationId: uploadAvatar
+      security:
+        - jwtEmployee: []
+        - jwtClient: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '201':
+          description: Аватар загружен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Avatar'
+        '400':
+          description: Неподдерживаемый формат файла
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '413':
+          description: Файл превышает лимит размера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /avatars/{id}:
+    get:
+      tags: [Avatars]
+      summary: Получить метаданные аватара
+      description: "Доступ: Все авторизованные"
+      operationId: getAvatarById
+      security:
+        - jwtEmployee: []
+        - jwtClient: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Аватар
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Avatar'
+        '401':
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      tags: [Avatars]
+      summary: Удалить аватар
+      description: "Доступ: Admin, Manager. Удаляет файл с диска и запись из БД. Связка с сотрудником/клиентом обнуляется на стороне employee/client (SET NULL)."
+      operationId: deleteAvatar
+      security:
+        - jwtEmployee: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Аватар удалён
+        '401':
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Недостаточно прав
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
   /menus:
     get:
-      tags:
-        - Menus
+      tags: [Menus]
       summary: Получить список меню
-      description: |
-        Возвращает список всех меню в системе. Клиенты видят только активные меню.
-        
-        Доступ: Все авторизованные пользователи
+      description: "Доступ: Все авторизованные. Клиенты видят только активные меню"
       operationId: getMenus
       security:
         - jwtEmployee: []
@@ -3377,10 +3072,9 @@ paths:
           in: query
           schema:
             type: boolean
-          description: Фильтр по активности меню (для клиентов по умолчанию true)
       responses:
         '200':
-          description: Список меню успешно получен
+          description: Список меню
           content:
             application/json:
               schema:
@@ -3397,20 +3091,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: "Internal Server Error"
-                exception: "An unexpected error occurred while processing the request"
-                message: "Please try again later or contact support if the problem persists"
-                timestamp: "2024-01-15T10:30:00Z"
-    
     post:
-      tags:
-        - Menus
-      summary: Создать новое меню
-      description: |
-        Создает новое меню в системе.
-        
-        Доступ: Admin, Manager
+      tags: [Menus]
+      summary: Создать меню
+      description: "Доступ: Admin, Manager"
       operationId: createMenu
       security:
         - jwtEmployee: []
@@ -3422,17 +3106,11 @@ paths:
               $ref: '#/components/schemas/MenuCreate'
       responses:
         '201':
-          description: Меню успешно создано
+          description: Меню создано
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Menu'
-        '400':
-          description: Ошибка валидации данных
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
         '401':
           description: Не авторизован
           content:
@@ -3440,7 +3118,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: Недостаточно прав доступа
+          description: Недостаточно прав
           content:
             application/json:
               schema:
@@ -3457,21 +3135,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: "Internal Server Error"
-                exception: "An unexpected error occurred while processing the request"
-                message: "Please try again later or contact support if the problem persists"
-                timestamp: "2024-01-15T10:30:00Z"
-  
+
   /menus/{id}:
     get:
-      tags:
-        - Menus
+      tags: [Menus]
       summary: Получить меню по ID
-      description: |
-        Возвращает информацию о конкретном меню.
-        
-        Доступ: Все авторизованные пользователи
+      description: "Доступ: Все авторизованные"
       operationId: getMenuById
       security:
         - jwtEmployee: []
@@ -3482,10 +3151,9 @@ paths:
           required: true
           schema:
             type: integer
-          description: ID меню
       responses:
         '200':
-          description: Меню успешно получено
+          description: Меню
           content:
             application/json:
               schema:
@@ -3497,7 +3165,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: Меню не найдено
+          description: Не найдено
           content:
             application/json:
               schema:
@@ -3508,20 +3176,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: "Internal Server Error"
-                exception: "An unexpected error occurred while processing the request"
-                message: "Please try again later or contact support if the problem persists"
-                timestamp: "2024-01-15T10:30:00Z"
-    
     put:
-      tags:
-        - Menus
+      tags: [Menus]
       summary: Полное обновление меню
-      description: |
-        Полностью обновляет информацию о меню.
-        
-        Доступ: Admin, Manager
+      description: "Доступ: Admin, Manager"
       operationId: updateMenu
       security:
         - jwtEmployee: []
@@ -3531,7 +3189,6 @@ paths:
           required: true
           schema:
             type: integer
-          description: ID меню
       requestBody:
         required: true
         content:
@@ -3540,17 +3197,11 @@ paths:
               $ref: '#/components/schemas/MenuUpdate'
       responses:
         '200':
-          description: Меню успешно обновлено
+          description: Меню обновлено
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Menu'
-        '400':
-          description: Ошибка валидации данных
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
         '401':
           description: Не авторизован
           content:
@@ -3558,13 +3209,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: Недостаточно прав доступа
+          description: Недостаточно прав
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: Меню не найдено
+          description: Не найдено
           content:
             application/json:
               schema:
@@ -3581,20 +3232,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: "Internal Server Error"
-                exception: "An unexpected error occurred while processing the request"
-                message: "Please try again later or contact support if the problem persists"
-                timestamp: "2024-01-15T10:30:00Z"
-    
     patch:
-      tags:
-        - Menus
+      tags: [Menus]
       summary: Частичное обновление меню
-      description: |
-        Частично обновляет информацию о меню.
-        
-        Доступ: Admin, Manager
+      description: "Доступ: Admin, Manager"
       operationId: patchMenu
       security:
         - jwtEmployee: []
@@ -3604,7 +3245,6 @@ paths:
           required: true
           schema:
             type: integer
-          description: ID меню
       requestBody:
         required: true
         content:
@@ -3613,17 +3253,11 @@ paths:
               $ref: '#/components/schemas/MenuUpdate'
       responses:
         '200':
-          description: Меню успешно обновлено
+          description: Меню обновлено
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Menu'
-        '400':
-          description: Ошибка валидации данных
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
         '401':
           description: Не авторизован
           content:
@@ -3631,13 +3265,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: Недостаточно прав доступа
+          description: Недостаточно прав
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: Меню не найдено
+          description: Не найдено
           content:
             application/json:
               schema:
@@ -3654,20 +3288,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: "Internal Server Error"
-                exception: "An unexpected error occurred while processing the request"
-                message: "Please try again later or contact support if the problem persists"
-                timestamp: "2024-01-15T10:30:00Z"
-    
     delete:
-      tags:
-        - Menus
+      tags: [Menus]
       summary: Удалить меню
-      description: |
-        Удаляет меню из системы.
-        
-        Доступ: Admin, Manager
+      description: "Доступ: Admin, Manager"
       operationId: deleteMenu
       security:
         - jwtEmployee: []
@@ -3677,10 +3301,9 @@ paths:
           required: true
           schema:
             type: integer
-          description: ID меню
       responses:
         '204':
-          description: Меню успешно удалено
+          description: Меню удалено
         '401':
           description: Не авторизован
           content:
@@ -3688,13 +3311,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: Недостаточно прав доступа
+          description: Недостаточно прав
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: Меню не найдено
+          description: Не найдено
           content:
             application/json:
               schema:
@@ -3705,22 +3328,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: "Internal Server Error"
-                exception: "An unexpected error occurred while processing the request"
-                message: "Please try again later or contact support if the problem persists"
-                timestamp: "2024-01-15T10:30:00Z"
-  
-  # Menu Dishes endpoints
+
   /menus/{menuId}/dishes:
     get:
-      tags:
-        - Menus
-      summary: Получить список блюд в меню
-      description: |
-        Возвращает список всех блюд в конкретном меню.
-        
-        Доступ: Все авторизованные пользователи
+      tags: [Menus]
+      summary: Получить блюда в меню
+      description: "Доступ: Все авторизованные"
       operationId: getMenuDishes
       security:
         - jwtEmployee: []
@@ -3731,10 +3344,9 @@ paths:
           required: true
           schema:
             type: integer
-          description: ID меню
       responses:
         '200':
-          description: Список блюд успешно получен
+          description: Список блюд
           content:
             application/json:
               schema:
@@ -3764,20 +3376,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: "Internal Server Error"
-                exception: "An unexpected error occurred while processing the request"
-                message: "Please try again later or contact support if the problem persists"
-                timestamp: "2024-01-15T10:30:00Z"
-    
     post:
-      tags:
-        - Menus
+      tags: [Menus]
       summary: Добавить блюдо в меню
-      description: |
-        Добавляет блюдо в меню.
-        
-        Доступ: Admin, Manager
+      description: "Доступ: Admin, Manager"
       operationId: createMenuDish
       security:
         - jwtEmployee: []
@@ -3787,7 +3389,6 @@ paths:
           required: true
           schema:
             type: integer
-          description: ID меню
       requestBody:
         required: true
         content:
@@ -3796,17 +3397,11 @@ paths:
               $ref: '#/components/schemas/MenuDishCreate'
       responses:
         '201':
-          description: Блюдо успешно добавлено в меню
+          description: Блюдо добавлено в меню
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/MenuDish'
-        '400':
-          description: Ошибка валидации данных
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
         '401':
           description: Не авторизован
           content:
@@ -3814,7 +3409,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: Недостаточно прав доступа
+          description: Недостаточно прав
           content:
             application/json:
               schema:
@@ -3837,21 +3432,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: "Internal Server Error"
-                exception: "An unexpected error occurred while processing the request"
-                message: "Please try again later or contact support if the problem persists"
-                timestamp: "2024-01-15T10:30:00Z"
-  
+
   /menus/{menuId}/dishes/{dishId}:
     delete:
-      tags:
-        - Menus
+      tags: [Menus]
       summary: Удалить блюдо из меню
-      description: |
-        Удаляет блюдо из меню.
-        
-        Доступ: Admin, Manager
+      description: "Доступ: Admin, Manager"
       operationId: deleteMenuDish
       security:
         - jwtEmployee: []
@@ -3861,16 +3447,14 @@ paths:
           required: true
           schema:
             type: integer
-          description: ID меню
         - name: dishId
           in: path
           required: true
           schema:
             type: integer
-          description: ID блюда
       responses:
         '204':
-          description: Блюдо успешно удалено из меню
+          description: Блюдо удалено из меню
         '401':
           description: Не авторизован
           content:
@@ -3878,7 +3462,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: Недостаточно прав доступа
+          description: Недостаточно прав
           content:
             application/json:
               schema:
@@ -3895,29 +3479,19 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: "Internal Server Error"
-                exception: "An unexpected error occurred while processing the request"
-                message: "Please try again later or contact support if the problem persists"
-                timestamp: "2024-01-15T10:30:00Z"
-  
-  # Ingredients endpoints
+
   /ingredients:
     get:
-      tags:
-        - Ingredients
+      tags: [Ingredients]
       summary: Получить список ингредиентов
-      description: |
-        Возвращает список всех ингредиентов в системе.
-        
-        Доступ: Все авторизованные пользователи
+      description: "Доступ: Все авторизованные"
       operationId: getIngredients
       security:
         - jwtEmployee: []
         - jwtClient: []
       responses:
         '200':
-          description: Список ингредиентов успешно получен
+          description: Список ингредиентов
           content:
             application/json:
               schema:
@@ -3934,20 +3508,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: "Internal Server Error"
-                exception: "An unexpected error occurred while processing the request"
-                message: "Please try again later or contact support if the problem persists"
-                timestamp: "2024-01-15T10:30:00Z"
-    
     post:
-      tags:
-        - Ingredients
-      summary: Создать новый ингредиент
-      description: |
-        Создает новый ингредиент в системе.
-        
-        Доступ: Admin, Manager
+      tags: [Ingredients]
+      summary: Создать ингредиент
+      description: "Доступ: Admin, Manager"
       operationId: createIngredient
       security:
         - jwtEmployee: []
@@ -3959,17 +3523,11 @@ paths:
               $ref: '#/components/schemas/IngredientCreate'
       responses:
         '201':
-          description: Ингредиент успешно создан
+          description: Ингредиент создан
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Ingredient'
-        '400':
-          description: Ошибка валидации данных
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
         '401':
           description: Не авторизован
           content:
@@ -3977,7 +3535,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: Недостаточно прав доступа
+          description: Недостаточно прав
           content:
             application/json:
               schema:
@@ -3994,21 +3552,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: "Internal Server Error"
-                exception: "An unexpected error occurred while processing the request"
-                message: "Please try again later or contact support if the problem persists"
-                timestamp: "2024-01-15T10:30:00Z"
-  
+
   /ingredients/{id}:
     get:
-      tags:
-        - Ingredients
+      tags: [Ingredients]
       summary: Получить ингредиент по ID
-      description: |
-        Возвращает информацию о конкретном ингредиенте.
-        
-        Доступ: Все авторизованные пользователи
+      description: "Доступ: Все авторизованные"
       operationId: getIngredientById
       security:
         - jwtEmployee: []
@@ -4019,10 +3568,9 @@ paths:
           required: true
           schema:
             type: integer
-          description: ID ингредиента
       responses:
         '200':
-          description: Ингредиент успешно получен
+          description: Ингредиент
           content:
             application/json:
               schema:
@@ -4034,7 +3582,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: Ингредиент не найден
+          description: Не найдено
           content:
             application/json:
               schema:
@@ -4045,20 +3593,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: "Internal Server Error"
-                exception: "An unexpected error occurred while processing the request"
-                message: "Please try again later or contact support if the problem persists"
-                timestamp: "2024-01-15T10:30:00Z"
-    
     put:
-      tags:
-        - Ingredients
+      tags: [Ingredients]
       summary: Полное обновление ингредиента
-      description: |
-        Полностью обновляет информацию об ингредиенте.
-        
-        Доступ: Admin, Manager
+      description: "Доступ: Admin, Manager"
       operationId: updateIngredient
       security:
         - jwtEmployee: []
@@ -4068,7 +3606,6 @@ paths:
           required: true
           schema:
             type: integer
-          description: ID ингредиента
       requestBody:
         required: true
         content:
@@ -4077,17 +3614,11 @@ paths:
               $ref: '#/components/schemas/IngredientUpdate'
       responses:
         '200':
-          description: Ингредиент успешно обновлен
+          description: Ингредиент обновлен
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Ingredient'
-        '400':
-          description: Ошибка валидации данных
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
         '401':
           description: Не авторизован
           content:
@@ -4095,13 +3626,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: Недостаточно прав доступа
+          description: Недостаточно прав
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: Ингредиент не найден
+          description: Не найдено
           content:
             application/json:
               schema:
@@ -4118,20 +3649,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: "Internal Server Error"
-                exception: "An unexpected error occurred while processing the request"
-                message: "Please try again later or contact support if the problem persists"
-                timestamp: "2024-01-15T10:30:00Z"
-    
     patch:
-      tags:
-        - Ingredients
+      tags: [Ingredients]
       summary: Частичное обновление ингредиента
-      description: |
-        Частично обновляет информацию об ингредиенте.
-        
-        Доступ: Admin, Manager
+      description: "Доступ: Admin, Manager"
       operationId: patchIngredient
       security:
         - jwtEmployee: []
@@ -4141,7 +3662,6 @@ paths:
           required: true
           schema:
             type: integer
-          description: ID ингредиента
       requestBody:
         required: true
         content:
@@ -4150,17 +3670,11 @@ paths:
               $ref: '#/components/schemas/IngredientUpdate'
       responses:
         '200':
-          description: Ингредиент успешно обновлен
+          description: Ингредиент обновлен
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Ingredient'
-        '400':
-          description: Ошибка валидации данных
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
         '401':
           description: Не авторизован
           content:
@@ -4168,13 +3682,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: Недостаточно прав доступа
+          description: Недостаточно прав
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: Ингредиент не найден
+          description: Не найдено
           content:
             application/json:
               schema:
@@ -4191,20 +3705,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: "Internal Server Error"
-                exception: "An unexpected error occurred while processing the request"
-                message: "Please try again later or contact support if the problem persists"
-                timestamp: "2024-01-15T10:30:00Z"
-    
     delete:
-      tags:
-        - Ingredients
+      tags: [Ingredients]
       summary: Удалить ингредиент
-      description: |
-        Удаляет ингредиент из системы.
-        
-        Доступ: Admin, Manager
+      description: "Доступ: Admin, Manager"
       operationId: deleteIngredient
       security:
         - jwtEmployee: []
@@ -4214,10 +3718,9 @@ paths:
           required: true
           schema:
             type: integer
-          description: ID ингредиента
       responses:
         '204':
-          description: Ингредиент успешно удален
+          description: Ингредиент удален
         '401':
           description: Не авторизован
           content:
@@ -4225,13 +3728,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: Недостаточно прав доступа
+          description: Недостаточно прав
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: Ингредиент не найден
+          description: Не найдено
           content:
             application/json:
               schema:
@@ -4242,29 +3745,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: "Internal Server Error"
-                exception: "An unexpected error occurred while processing the request"
-                message: "Please try again later or contact support if the problem persists"
-                timestamp: "2024-01-15T10:30:00Z"
-  
-  # Order Statuses endpoints
+
   /order-statuses:
     get:
-      tags:
-        - Order Statuses
+      tags: [Order Statuses]
       summary: Получить список статусов заказов
-      description: |
-        Возвращает список всех статусов заказов в системе.
-        
-        Доступ: Все авторизованные пользователи
+      description: "Доступ: только Admin (authority ADMIN). Справочник заполняется миграциями; менеджер, курьер и клиент используют коды статусов из ответов заказа и истории."
       operationId: getOrderStatuses
       security:
         - jwtEmployee: []
-        - jwtClient: []
       responses:
         '200':
-          description: Список статусов успешно получен
+          description: Список статусов
           content:
             application/json:
               schema:
@@ -4281,81 +3773,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: "Internal Server Error"
-                exception: "An unexpected error occurred while processing the request"
-                message: "Please try again later or contact support if the problem persists"
-                timestamp: "2024-01-15T10:30:00Z"
-    
-    post:
-      tags:
-        - Order Statuses
-      summary: Создать новый статус заказа
-      description: |
-        Создает новый статус заказа в системе.
-        
-        Доступ: Admin
-      operationId: createOrderStatus
-      security:
-        - jwtEmployee: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/OrderStatusCreate'
-      responses:
-        '201':
-          description: Статус успешно создан
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/OrderStatus'
-        '400':
-          description: Ошибка валидации данных
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Не авторизован
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Недостаточно прав доступа
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '422':
-          description: Ошибка валидации
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ValidationError'
-        '500':
-          description: Внутренняя ошибка сервера
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: "Internal Server Error"
-                exception: "An unexpected error occurred while processing the request"
-                message: "Please try again later or contact support if the problem persists"
-                timestamp: "2024-01-15T10:30:00Z"
-  
+
   /order-statuses/{id}:
     get:
-      tags:
-        - Order Statuses
-      summary: Получить статус заказа по ID
-      description: |
-        Возвращает информацию о конкретном статусе заказа.
-        
-        Доступ: Admin, Manager
+      tags: [Order Statuses]
+      summary: Получить статус по ID
+      description: "Доступ: только Admin (authority ADMIN)"
       operationId: getOrderStatusById
       security:
         - jwtEmployee: []
@@ -4365,10 +3788,9 @@ paths:
           required: true
           schema:
             type: integer
-          description: ID статуса
       responses:
         '200':
-          description: Статус успешно получен
+          description: Статус
           content:
             application/json:
               schema:
@@ -4379,14 +3801,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Недостаточно прав доступа
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: Статус не найден
+          description: Не найдено
           content:
             application/json:
               schema:
@@ -4397,218 +3813,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: "Internal Server Error"
-                exception: "An unexpected error occurred while processing the request"
-                message: "Please try again later or contact support if the problem persists"
-                timestamp: "2024-01-15T10:30:00Z"
-    
-    put:
-      tags:
-        - Order Statuses
-      summary: Полное обновление статуса заказа
-      description: |
-        Полностью обновляет информацию о статусе заказа.
-        
-        Доступ: Admin
-      operationId: updateOrderStatus
-      security:
-        - jwtEmployee: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-          description: ID статуса
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/OrderStatusUpdate'
-      responses:
-        '200':
-          description: Статус успешно обновлен
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/OrderStatus'
-        '400':
-          description: Ошибка валидации данных
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Не авторизован
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Недостаточно прав доступа
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Статус не найден
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '422':
-          description: Ошибка валидации
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ValidationError'
-        '500':
-          description: Внутренняя ошибка сервера
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: "Internal Server Error"
-                exception: "An unexpected error occurred while processing the request"
-                message: "Please try again later or contact support if the problem persists"
-                timestamp: "2024-01-15T10:30:00Z"
-    
-    patch:
-      tags:
-        - Order Statuses
-      summary: Частичное обновление статуса заказа
-      description: |
-        Частично обновляет информацию о статусе заказа.
-        
-        Доступ: Admin
-      operationId: patchOrderStatus
-      security:
-        - jwtEmployee: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-          description: ID статуса
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/OrderStatusUpdate'
-      responses:
-        '200':
-          description: Статус успешно обновлен
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/OrderStatus'
-        '400':
-          description: Ошибка валидации данных
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Не авторизован
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Недостаточно прав доступа
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Статус не найден
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '422':
-          description: Ошибка валидации
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ValidationError'
-        '500':
-          description: Внутренняя ошибка сервера
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: "Internal Server Error"
-                exception: "An unexpected error occurred while processing the request"
-                message: "Please try again later or contact support if the problem persists"
-                timestamp: "2024-01-15T10:30:00Z"
-    
-    delete:
-      tags:
-        - Order Statuses
-      summary: Удалить статус заказа
-      description: |
-        Удаляет статус заказа из системы.
-        
-        Доступ: Admin
-      operationId: deleteOrderStatus
-      security:
-        - jwtEmployee: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-          description: ID статуса
-      responses:
-        '204':
-          description: Статус успешно удален
-        '401':
-          description: Не авторизован
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Недостаточно прав доступа
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Статус не найден
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '500':
-          description: Внутренняя ошибка сервера
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: "Internal Server Error"
-                exception: "An unexpected error occurred while processing the request"
-                message: "Please try again later or contact support if the problem persists"
-                timestamp: "2024-01-15T10:30:00Z"
-  # Orders endpoints
+
   /orders:
     get:
-      tags:
-        - Orders
+      tags: [Orders]
       summary: Получить список заказов
-      description: |
-        Возвращает список заказов. Admin и Manager видят все заказы, Courier - только назначенные ему, Client - только свои.
-        
-        Доступ: Admin, Manager (все заказы), Courier (назначенные), Client (свои)
+      description: "Доступ: Admin, Manager (все), Courier (назначенные), Client (свои)"
       operationId: getOrders
       security:
         - jwtEmployee: []
@@ -4618,20 +3828,17 @@ paths:
           in: query
           schema:
             type: integer
-          description: Фильтр по клиенту (Admin, Manager)
         - name: courier_id
           in: query
           schema:
             type: integer
-          description: Фильтр по курьеру (Admin, Manager)
         - name: status_id
           in: query
           schema:
             type: integer
-          description: Фильтр по статусу
       responses:
         '200':
-          description: Список заказов успешно получен
+          description: Список заказов
           content:
             application/json:
               schema:
@@ -4643,7 +3850,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: Недостаточно прав доступа
+          description: Недостаточно прав
           content:
             application/json:
               schema:
@@ -4654,20 +3861,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: "Internal Server Error"
-                exception: "An unexpected error occurred while processing the request"
-                message: "Please try again later or contact support if the problem persists"
-                timestamp: "2024-01-15T10:30:00Z"
-    
     post:
-      tags:
-        - Orders
-      summary: Создать новый заказ
-      description: |
-        Создает новый заказ. Клиенты создают заказы для себя, менеджеры могут создавать заказы для любых клиентов.
-        
-        Доступ: Client, Manager
+      tags: [Orders]
+      summary: Создать заказ
+      description: "Доступ: Client, Manager"
       operationId: createOrder
       security:
         - jwtEmployee: []
@@ -4680,17 +3877,11 @@ paths:
               $ref: '#/components/schemas/OrderCreate'
       responses:
         '201':
-          description: Заказ успешно создан
+          description: Заказ создан
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Order'
-        '400':
-          description: Ошибка валидации данных
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
         '401':
           description: Не авторизован
           content:
@@ -4698,7 +3889,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: Недостаточно прав доступа
+          description: Недостаточно прав
           content:
             application/json:
               schema:
@@ -4721,21 +3912,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: "Internal Server Error"
-                exception: "An unexpected error occurred while processing the request"
-                message: "Please try again later or contact support if the problem persists"
-                timestamp: "2024-01-15T10:30:00Z"
-  
+
   /orders/{id}:
     get:
-      tags:
-        - Orders
+      tags: [Orders]
       summary: Получить заказ по ID
-      description: |
-        Возвращает информацию о конкретном заказе. Courier может получить только назначенные ему заказы, Client - только свои.
-        
-        Доступ: Admin, Manager (любой заказ), Courier (назначенные), Client (свои)
+      description: "Доступ: Admin, Manager (любой), Courier (назначенные), Client (свои)"
       operationId: getOrderById
       security:
         - jwtEmployee: []
@@ -4746,10 +3928,9 @@ paths:
           required: true
           schema:
             type: integer
-          description: ID заказа
       responses:
         '200':
-          description: Заказ успешно получен
+          description: Заказ
           content:
             application/json:
               schema:
@@ -4761,13 +3942,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: Недостаточно прав доступа
+          description: Недостаточно прав
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: Заказ не найден
+          description: Не найдено
           content:
             application/json:
               schema:
@@ -4778,20 +3959,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: "Internal Server Error"
-                exception: "An unexpected error occurred while processing the request"
-                message: "Please try again later or contact support if the problem persists"
-                timestamp: "2024-01-15T10:30:00Z"
-    
     put:
-      tags:
-        - Orders
+      tags: [Orders]
       summary: Полное обновление заказа
-      description: |
-        Полностью обновляет информацию о заказе.
-        
-        Доступ: Admin, Manager
+      description: "Доступ: Admin, Manager"
       operationId: updateOrder
       security:
         - jwtEmployee: []
@@ -4801,7 +3972,6 @@ paths:
           required: true
           schema:
             type: integer
-          description: ID заказа
       requestBody:
         required: true
         content:
@@ -4810,17 +3980,11 @@ paths:
               $ref: '#/components/schemas/OrderUpdate'
       responses:
         '200':
-          description: Заказ успешно обновлен
+          description: Заказ обновлен
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Order'
-        '400':
-          description: Ошибка валидации данных
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
         '401':
           description: Не авторизован
           content:
@@ -4828,13 +3992,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: Недостаточно прав доступа
+          description: Недостаточно прав
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: Заказ не найден
+          description: Не найдено
           content:
             application/json:
               schema:
@@ -4851,20 +4015,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: "Internal Server Error"
-                exception: "An unexpected error occurred while processing the request"
-                message: "Please try again later or contact support if the problem persists"
-                timestamp: "2024-01-15T10:30:00Z"
-    
     patch:
-      tags:
-        - Orders
+      tags: [Orders]
       summary: Частичное обновление заказа
-      description: |
-        Частично обновляет информацию о заказе. Courier может обновлять только назначенные ему заказы (например, статус доставки).
-        
-        Доступ: Admin, Manager, Courier (для назначенных)
+      description: "Доступ: Admin, Manager, Courier (для назначенных)"
       operationId: patchOrder
       security:
         - jwtEmployee: []
@@ -4875,7 +4029,6 @@ paths:
           required: true
           schema:
             type: integer
-          description: ID заказа
       requestBody:
         required: true
         content:
@@ -4884,17 +4037,11 @@ paths:
               $ref: '#/components/schemas/OrderUpdate'
       responses:
         '200':
-          description: Заказ успешно обновлен
+          description: Заказ обновлен
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Order'
-        '400':
-          description: Ошибка валидации данных
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
         '401':
           description: Не авторизован
           content:
@@ -4902,13 +4049,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: Недостаточно прав доступа
+          description: Недостаточно прав
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: Заказ не найден
+          description: Не найдено
           content:
             application/json:
               schema:
@@ -4925,20 +4072,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: "Internal Server Error"
-                exception: "An unexpected error occurred while processing the request"
-                message: "Please try again later or contact support if the problem persists"
-                timestamp: "2024-01-15T10:30:00Z"
-    
     delete:
-      tags:
-        - Orders
+      tags: [Orders]
       summary: Удалить заказ
-      description: |
-        Удаляет заказ из системы.
-        
-        Доступ: Admin
+      description: "Доступ: Admin"
       operationId: deleteOrder
       security:
         - jwtEmployee: []
@@ -4948,10 +4085,9 @@ paths:
           required: true
           schema:
             type: integer
-          description: ID заказа
       responses:
         '204':
-          description: Заказ успешно удален
+          description: Заказ удален
         '401':
           description: Не авторизован
           content:
@@ -4959,13 +4095,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: Недостаточно прав доступа
+          description: Недостаточно прав
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: Заказ не найден
+          description: Не найдено
           content:
             application/json:
               schema:
@@ -4976,22 +4112,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: "Internal Server Error"
-                exception: "An unexpected error occurred while processing the request"
-                message: "Please try again later or contact support if the problem persists"
-                timestamp: "2024-01-15T10:30:00Z"
-  
-  # Order Status History endpoints
+
   /orders/{orderId}/status-history:
     get:
-      tags:
-        - Orders
-      summary: Получить историю изменения статусов заказа
-      description: |
-        Возвращает историю изменения статусов конкретного заказа. Courier может получить историю только для назначенных ему заказов, Client - только для своих.
-        
-        Доступ: Admin, Manager (любой заказ), Courier (назначенные), Client (свои)
+      tags: [Orders]
+      summary: Получить историю статусов заказа
+      description: "Доступ: Admin, Manager (любой), Courier (назначенные), Client (свои)"
       operationId: getOrderStatusHistory
       security:
         - jwtEmployee: []
@@ -5002,10 +4128,9 @@ paths:
           required: true
           schema:
             type: integer
-          description: ID заказа
       responses:
         '200':
-          description: История статусов успешно получена
+          description: История статусов
           content:
             application/json:
               schema:
@@ -5017,7 +4142,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: Недостаточно прав доступа
+          description: Недостаточно прав
           content:
             application/json:
               schema:
@@ -5034,20 +4159,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: "Internal Server Error"
-                exception: "An unexpected error occurred while processing the request"
-                message: "Please try again later or contact support if the problem persists"
-                timestamp: "2024-01-15T10:30:00Z"
-    
     post:
-      tags:
-        - Orders
+      tags: [Orders]
       summary: Изменить статус заказа
-      description: |
-        Изменяет статус заказа и добавляет запись в историю. Admin и Manager могут изменять статус любого заказа, Courier - только назначенных ему, Client может отменять или подтверждать свои заказы.
-        
-        Доступ: Admin, Manager, Courier (для назначенных), Client (для своих)
+      description: "Доступ: Admin, Manager, Courier (назначенные), Client (свои)"
       operationId: createOrderStatusHistory
       security:
         - jwtEmployee: []
@@ -5058,7 +4173,6 @@ paths:
           required: true
           schema:
             type: integer
-          description: ID заказа
       requestBody:
         required: true
         content:
@@ -5067,17 +4181,11 @@ paths:
               $ref: '#/components/schemas/OrderStatusHistoryCreate'
       responses:
         '201':
-          description: Статус заказа успешно изменен
+          description: Статус изменен
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/OrderStatusHistory'
-        '400':
-          description: Ошибка валидации данных
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
         '401':
           description: Не авторизован
           content:
@@ -5085,7 +4193,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: Недостаточно прав доступа
+          description: Недостаточно прав
           content:
             application/json:
               schema:
@@ -5108,22 +4216,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: "Internal Server Error"
-                exception: "An unexpected error occurred while processing the request"
-                message: "Please try again later or contact support if the problem persists"
-                timestamp: "2024-01-15T10:30:00Z"
-  
-  # Order Items endpoints
+
   /orders/{orderId}/items:
     get:
-      tags:
-        - Order Items
-      summary: Получить список позиций заказа
-      description: |
-        Возвращает список всех позиций конкретного заказа. Доступ зависит от прав доступа к самому заказу.
-        
-        Доступ: Все авторизованные пользователи с доступом к заказу
+      tags: [Order Items]
+      summary: Получить позиции заказа
+      description: "Доступ: Все авторизованные с доступом к заказу"
       operationId: getOrderItems
       security:
         - jwtEmployee: []
@@ -5134,10 +4232,9 @@ paths:
           required: true
           schema:
             type: integer
-          description: ID заказа
       responses:
         '200':
-          description: Список позиций успешно получен
+          description: Список позиций
           content:
             application/json:
               schema:
@@ -5149,7 +4246,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: Недостаточно прав доступа
+          description: Недостаточно прав
           content:
             application/json:
               schema:
@@ -5166,20 +4263,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: "Internal Server Error"
-                exception: "An unexpected error occurred while processing the request"
-                message: "Please try again later or contact support if the problem persists"
-                timestamp: "2024-01-15T10:30:00Z"
-    
     post:
-      tags:
-        - Order Items
+      tags: [Order Items]
       summary: Добавить позицию в заказ
-      description: |
-        Добавляет позицию в заказ. Client может добавлять позиции только в свои заказы, Manager - в любые.
-        
-        Доступ: Client (для своих заказов), Manager
+      description: "Доступ: Client (свои заказы), Manager"
       operationId: createOrderItem
       security:
         - jwtEmployee: []
@@ -5190,7 +4277,6 @@ paths:
           required: true
           schema:
             type: integer
-          description: ID заказа
       requestBody:
         required: true
         content:
@@ -5199,17 +4285,11 @@ paths:
               $ref: '#/components/schemas/OrderItemCreate'
       responses:
         '201':
-          description: Позиция успешно добавлена в заказ
+          description: Позиция добавлена
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/OrderItem'
-        '400':
-          description: Ошибка валидации данных
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
         '401':
           description: Не авторизован
           content:
@@ -5217,7 +4297,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: Недостаточно прав доступа
+          description: Недостаточно прав
           content:
             application/json:
               schema:
@@ -5240,21 +4320,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: "Internal Server Error"
-                exception: "An unexpected error occurred while processing the request"
-                message: "Please try again later or contact support if the problem persists"
-                timestamp: "2024-01-15T10:30:00Z"
-  
+
   /orders/{orderId}/items/{id}:
     get:
-      tags:
-        - Order Items
+      tags: [Order Items]
       summary: Получить позицию заказа по ID
-      description: |
-        Возвращает информацию о конкретной позиции заказа. Доступ зависит от прав доступа к самому заказу.
-        
-        Доступ: Все авторизованные пользователи с доступом к заказу
+      description: "Доступ: Все авторизованные с доступом к заказу"
       operationId: getOrderItemById
       security:
         - jwtEmployee: []
@@ -5265,16 +4336,14 @@ paths:
           required: true
           schema:
             type: integer
-          description: ID заказа
         - name: id
           in: path
           required: true
           schema:
             type: integer
-          description: ID позиции
       responses:
         '200':
-          description: Позиция успешно получена
+          description: Позиция
           content:
             application/json:
               schema:
@@ -5286,13 +4355,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: Недостаточно прав доступа
+          description: Недостаточно прав
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: Позиция не найдена
+          description: Не найдено
           content:
             application/json:
               schema:
@@ -5303,20 +4372,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: "Internal Server Error"
-                exception: "An unexpected error occurred while processing the request"
-                message: "Please try again later or contact support if the problem persists"
-                timestamp: "2024-01-15T10:30:00Z"
-    
     put:
-      tags:
-        - Order Items
-      summary: Полное обновление позиции заказа
-      description: |
-        Полностью обновляет информацию о позиции заказа.
-        
-        Доступ: Admin, Manager
+      tags: [Order Items]
+      summary: Полное обновление позиции
+      description: "Доступ: Admin, Manager"
       operationId: updateOrderItem
       security:
         - jwtEmployee: []
@@ -5326,13 +4385,11 @@ paths:
           required: true
           schema:
             type: integer
-          description: ID заказа
         - name: id
           in: path
           required: true
           schema:
             type: integer
-          description: ID позиции
       requestBody:
         required: true
         content:
@@ -5341,17 +4398,11 @@ paths:
               $ref: '#/components/schemas/OrderItemUpdate'
       responses:
         '200':
-          description: Позиция успешно обновлена
+          description: Позиция обновлена
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/OrderItem'
-        '400':
-          description: Ошибка валидации данных
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
         '401':
           description: Не авторизован
           content:
@@ -5359,13 +4410,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: Недостаточно прав доступа
+          description: Недостаточно прав
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: Позиция не найдена
+          description: Не найдено
           content:
             application/json:
               schema:
@@ -5382,20 +4433,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: "Internal Server Error"
-                exception: "An unexpected error occurred while processing the request"
-                message: "Please try again later or contact support if the problem persists"
-                timestamp: "2024-01-15T10:30:00Z"
-    
     patch:
-      tags:
-        - Order Items
-      summary: Частичное обновление позиции заказа
-      description: |
-        Частично обновляет информацию о позиции заказа.
-        
-        Доступ: Admin, Manager
+      tags: [Order Items]
+      summary: Частичное обновление позиции
+      description: "Доступ: Admin, Manager"
       operationId: patchOrderItem
       security:
         - jwtEmployee: []
@@ -5405,13 +4446,11 @@ paths:
           required: true
           schema:
             type: integer
-          description: ID заказа
         - name: id
           in: path
           required: true
           schema:
             type: integer
-          description: ID позиции
       requestBody:
         required: true
         content:
@@ -5420,17 +4459,11 @@ paths:
               $ref: '#/components/schemas/OrderItemUpdate'
       responses:
         '200':
-          description: Позиция успешно обновлена
+          description: Позиция обновлена
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/OrderItem'
-        '400':
-          description: Ошибка валидации данных
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
         '401':
           description: Не авторизован
           content:
@@ -5438,13 +4471,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: Недостаточно прав доступа
+          description: Недостаточно прав
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: Позиция не найдена
+          description: Не найдено
           content:
             application/json:
               schema:
@@ -5461,20 +4494,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: "Internal Server Error"
-                exception: "An unexpected error occurred while processing the request"
-                message: "Please try again later or contact support if the problem persists"
-                timestamp: "2024-01-15T10:30:00Z"
-    
     delete:
-      tags:
-        - Order Items
+      tags: [Order Items]
       summary: Удалить позицию из заказа
-      description: |
-        Удаляет позицию из заказа. Client может удалять позиции только из своих заказов, Manager - из любых.
-        
-        Доступ: Admin, Manager, Client (для своих заказов)
+      description: "Доступ: Admin, Manager, Client (свои заказы)"
       operationId: deleteOrderItem
       security:
         - jwtEmployee: []
@@ -5485,16 +4508,14 @@ paths:
           required: true
           schema:
             type: integer
-          description: ID заказа
         - name: id
           in: path
           required: true
           schema:
             type: integer
-          description: ID позиции
       responses:
         '204':
-          description: Позиция успешно удалена
+          description: Позиция удалена
         '401':
           description: Не авторизован
           content:
@@ -5502,13 +4523,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
-          description: Недостаточно прав доступа
+          description: Недостаточно прав
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: Позиция не найдена
+          description: Не найдено
           content:
             application/json:
               schema:
@@ -5519,8 +4540,3 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-              example:
-                error: "Internal Server Error"
-                exception: "An unexpected error occurred while processing the request"
-                message: "Please try again later or contact support if the problem persists"
-                timestamp: "2024-01-15T10:30:00Z"

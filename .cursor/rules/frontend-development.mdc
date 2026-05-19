@@ -1,0 +1,45 @@
+---
+description: Подход к разработке frontend Food Rush (FSD, HttpService, SWR, UI kit)
+globs: frontend/**/*
+alwaysApply: false
+---
+
+# Frontend Food Rush
+
+Перед UI — макет в [documentation/пояснительная-записка/assets/](../../documentation/пояснительная-записка/assets/) и [documentation/roles/](../../documentation/roles/). API — [documentation/api/](../../documentation/api/).
+
+## Архитектура (FSD)
+
+- Слои: `app` → `views` → `widgets` → `features` → `entities` → `shared`
+- Импорт только вниз; public API слайса — `index.ts`
+- `src/app/*` — тонкие маршруты; страницы в `src/views/`
+
+## Данные
+
+- **HTTP:** нативный `fetch` только внутри `shared/api/http-service.ts` (`HttpService`)
+- **Сущности:** классы `*Service` в `entities/<domain>/api/` (`DishService.updateDish`, …), используют `HttpService`
+- **Чтение:** SWR в `entities/<domain>/model/use-*.ts`; после мутаций — `mutate`
+- **Клиент:** Zustand (+ `persist` для корзины в `features/cart`)
+- **Валидация:** Zod для ответов API и `safeParse` на submit форм
+- **Не использовать:** react-hook-form, TanStack Query, прямой `fetch` в компонентах
+- JSON-поля в TS — **snake_case** как в API
+
+## UI
+
+- Собирать из `frontend/src/shared/ui/` (shadcn); минимум сырой вёрстки
+- Новые примитивы — `npx shadcn@latest add` → `shared/ui/`
+- Формы — controlled inputs, ручная валидация (форм мало)
+
+## Пример вызова
+
+```typescript
+// ✅ feature/view
+const { data } = useDishes();
+await dishService.updateDish(id, body);
+mutate("/dishes");
+
+// ❌
+await fetch(`${apiUrl}/dishes/${id}`, …);
+```
+
+Подробности, чеклисты и статусы фаз: [frontend/ROADMAP.md](../../frontend/ROADMAP.md). После реализации — [roadmap-progress.mdc](./roadmap-progress.mdc).

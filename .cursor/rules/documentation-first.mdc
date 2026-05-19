@@ -1,0 +1,40 @@
+---
+description: Перед работой изучать documentation/; фиксировать расхождения с кодом
+alwaysApply: true
+---
+
+# Документация перед работой
+
+Перед изменением кода, API, БД или UI **сначала** изучи актуальную документацию в `documentation/`:
+
+1. Начни с [documentation/README.md](documentation/README.md) — оглавление и источники истины.
+2. По задаче открой релевантные разделы:
+   - продукт: `documentation/product/`
+   - роли/UI: `documentation/roles/`
+   - данные: `documentation/data/`, `documentation/db.dbml`
+   - API: `documentation/api/`, `documentation/swagger.yaml`
+   - backend (источник истины): `backend/` (OpenAPI, миграции Flyway, SecurityConfig)
+3. Пояснительная записка (`documentation/пояснительная-записка/`) — **архив**, не правится. Расхождения с ней — только в [zamechaniya-k-poyasnitelnoj-zapiske.md](documentation/zamechaniya-k-poyasnitelnoj-zapiske.md).
+
+Приоритет при конфликте: **код backend** → OpenAPI/миграции → `documentation/` (кроме записки).
+
+## Расхождения документации и реальности
+
+Если фактическое поведение (код, миграции, OpenAPI, UI) **не совпадает** с актуальной техдокументацией (`product/`, `roles/`, `data/`, `api/`, `swagger.yaml`, `db.dbml`):
+
+1. **Не** подгоняй код под устаревший текст без явного запроса пользователя.
+2. Добавь запись в [documentation/raszhozhdeniya-dokumentacii.md](documentation/raszhozhdeniya-dokumentacii.md) (не дублируй уже существующие пункты).
+3. Кратко опиши, **что исправить в документации**, чтобы она стала верной (файл, раздел, ожидаемая формулировка/данные).
+
+Формат одной записи:
+
+```markdown
+## N. Краткий заголовок
+
+- **Документ:** путь к файлу (раздел)
+- **Сейчас в документации:** что написано
+- **Факт:** что в коде / OpenAPI / БД
+- **Исправить в документации:** конкретные правки
+```
+
+После исправления документации удали или пометь запись как закрытую.
